@@ -1,0 +1,12 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="16.15" height="16.15" viewBox="0 0 16.15 16.15" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icon">
+<g id="Rectangle">
+<mask id="path-1-inside-1_0_370" fill="white">
+<rect x="1" y="3" width="9" height="9" rx="1"/>
+</mask>
+<rect x="1" y="3" width="9" height="9" rx="1" stroke="#C8B4B9" stroke-width="2.6" mask="url(#path-1-inside-1_0_370)"/>
+</g>
+<circle id="Ellipse" cx="11.7" cy="11.7" r="2.35" stroke="#C8B4B9" stroke-width="1.3"/>
+<path id="Vector" d="M13.9 13.9L15.5 15.5" stroke="#C8B4B9" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</svg>

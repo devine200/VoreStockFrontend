@@ -1,0 +1,17 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icon">
+<path id="Vector" d="M2 9.5C2 4.5 5.3 1 8 1C10.7 1 14 4.5 14 9.5" stroke="#C8B4B9" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+<g id="Rectangle">
+<mask id="path-2-inside-1_0_323" fill="white">
+<rect x="1" y="9.5" width="3" height="4" rx="1.2"/>
+</mask>
+<rect x="1" y="9.5" width="3" height="4" rx="1.2" stroke="#C8B4B9" stroke-width="2.6" mask="url(#path-2-inside-1_0_323)"/>
+</g>
+<g id="Rectangle_2">
+<mask id="path-3-inside-2_0_323" fill="white">
+<rect x="12" y="9.5" width="3" height="4" rx="1.2"/>
+</mask>
+<rect x="12" y="9.5" width="3" height="4" rx="1.2" stroke="#C8B4B9" stroke-width="2.6" mask="url(#path-3-inside-2_0_323)"/>
+</g>
+</g>
+</svg>

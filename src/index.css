@@ -1,0 +1,194 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Lexend', ui-sans-serif, system-ui, sans-serif;
+
+  /* Spacing scale from Figma (1440 artboard) */
+  --spacing-page-x: 80px; /* content inset */
+  --spacing-section: 56px; /* home panel → panel */
+  --spacing-section-sm: 54px; /* bid-categories → featured */
+  --spacing-panel: 24px; /* panel pad + header→grid */
+  --spacing-card: 32px; /* card column gap */
+  --spacing-card-row: 48px; /* card row gap (category) */
+  --spacing-stack: 16px; /* image→body, body→actions */
+  --spacing-stack-sm: 8px; /* title→chip, meta→bids */
+  --spacing-inline: 12px; /* filter radio rows */
+  --spacing-filter-block: 20px; /* filter section gaps */
+  --spacing-sidebar-gap: 54px; /* filters → results */
+
+  /* Figma tokens — VSK Global */
+  --color-wine-900: #0e0104;
+  --color-wine-500: #480516;
+  --color-wine-400: #6d3745;
+  --color-wine-100: #dacdd0;
+  --color-wine-50: #f9f5f6;
+
+  --color-neutral-900: #060709;
+  --color-neutral-500: #1a1e26;
+  --color-neutral-400: #46494f;
+  --color-neutral-300: #717378;
+  --color-neutral-200: #9d9ea2;
+  --color-neutral-100: #c8c9cb;
+  --color-neutral-50: #f4f4f4;
+  --color-neutral-0: #ffffff;
+
+  --color-secondary-500: #05422c;
+  --color-secondary-50: #f2f6f4;
+  --color-dock: #0a6e38;
+  --color-dock-soft: #e6f4ed;
+
+  --color-orange: #f2bc1b;
+  --color-accent-red: #ff383c;
+
+  --color-border: #ebebec;
+  --color-border-soft: #f4f4f4;
+  --color-surface: #f5f5f6;
+  --color-muted: #7a7b7c;
+
+  /* Aliases used across existing components */
+  --color-ink: #1a1e26;
+  --color-ink-muted: #7a7b7c;
+  --color-surface-elevated: #ffffff;
+  --color-border-strong: #ebebec;
+  --color-brand: #480516;
+  --color-brand-hover: #6d3745;
+  --color-brand-soft: #f9f5f6;
+  --color-accent: #f2bc1b;
+  --color-accent-soft: #fef8e6;
+  --color-danger: #ff383c;
+  --color-danger-soft: #fff1f1;
+  --color-success: #05422c;
+  --color-success-soft: #e6f4ed;
+  --color-warning: #f2bc1b;
+  --color-warning-soft: #fef8e6;
+
+  /* Admin dashboard (Figma Admin canvas) */
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  --color-maroon-50: #f4f0f1;
+  --color-maroon-200: #c8b4b9;
+  --color-maroon-300: #a7878f;
+  --color-maroon-400: #835561;
+  --color-maroon-600: #531424;
+  --color-maroon-800: #3a0412;
+  --color-maroon-950: #1f0209;
+  --color-emerald-50: #ecfdf5;
+  --color-emerald-200: #a7f3d0;
+  --color-emerald-700: #047857;
+  --color-amber-50: #fffbeb;
+  --color-amber-200: #fde68a;
+  --color-amber-600: #d97706;
+  --color-amber-700: #b45309;
+  --color-red-50: #fef2f2;
+  --color-red-200: #fecaca;
+  --color-red-500: #ef4444;
+  --color-red-600: #dc2626;
+  --color-red-700: #b91c1c;
+  --color-blue-50: #eff6ff;
+  --color-blue-200: #bfdbfe;
+  --color-blue-700: #1d4ed8;
+
+  --animate-fade-in: fade-in 180ms ease-out;
+  --animate-slide-up: slide-up 200ms ease-out;
+  --animate-scale-in: scale-in 180ms ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    color: var(--color-neutral-500);
+    background: var(--color-neutral-0);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-width: 0;
+    line-height: 1.5;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  a,
+  button,
+  label,
+  summary,
+  select,
+  [role='button'],
+  [role='tab'],
+  [role='menuitem'],
+  [role='option'],
+  [role='switch'],
+  [role='checkbox'],
+  [role='radio'],
+  [role='link'],
+  input[type='button'],
+  input[type='submit'],
+  input[type='reset'],
+  input[type='checkbox'],
+  input[type='radio'],
+  input[type='file'],
+  input[type='range'] {
+    cursor: pointer;
+  }
+
+  :disabled,
+  [aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+}
