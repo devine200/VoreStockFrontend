@@ -42,8 +42,12 @@ export function AuthLayout() {
         <div className="pointer-events-none absolute left-[54px] top-[-67px] size-48 rounded-full bg-[#dacdd0] opacity-[0.04]" />
         <div className="pointer-events-none absolute left-[142px] top-[86px] hidden size-48 rounded-full bg-[#dacdd0] opacity-[0.04] lg:block" />
 
-        <div className="relative h-[40.161px] w-[59px] overflow-hidden">
-          <img src={logoWhite} alt="VSK Global" className="h-[60px] w-[88px] max-w-none object-cover" />
+        <div className="relative h-[60px] w-[88px] shrink-0 overflow-hidden">
+          <img
+            src={logoWhite}
+            alt="VSK Global"
+            className="pointer-events-none absolute inset-0 size-full max-w-none object-cover"
+          />
         </div>
 
         <div className="relative mt-8 max-w-[384px] lg:mt-0">

@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom'
 import type { Lot } from '@/types'
 import { useCountdown } from '@/hooks/useCountdown'
 import { icons, brandTrek } from '@/assets'
-import { Icon } from '@/components/shared/Icon'
 import cardPattern from '@/assets/images/card-pattern.svg'
 import lotGummies from '@/assets/images/lot-gummies.png'
 import { useAppDispatch } from '@/store/hooks'
@@ -27,10 +26,10 @@ export function LotCard({ lot }: { lot: Lot; compact?: boolean }) {
   const unitPrice = lot.units > 0 ? lot.currentBid / lot.units : 0
 
   return (
-    <div className="flex w-full flex-col gap-4">
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col gap-4">
       <Link
         to={`/lots/${lot.slug}`}
-        className="relative flex h-[240px] w-full items-center justify-center overflow-hidden rounded-lg bg-white"
+        className="relative flex h-[240px] w-full shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white"
       >
         <img
           src={cardPattern}
@@ -52,8 +51,8 @@ export function LotCard({ lot }: { lot: Lot; compact?: boolean }) {
         </span>
       </Link>
 
-      <div className="flex flex-col gap-4">
-        <div className="relative h-5 w-[168px] overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col gap-4">
+        <div className="relative h-5 w-[168px] shrink-0 overflow-hidden">
           <img
             src={brandTrek}
             alt={lot.brand ?? 'Brand'}
@@ -65,7 +64,7 @@ export function LotCard({ lot }: { lot: Lot; compact?: boolean }) {
           <div className="flex flex-col gap-2">
             <Link
               to={`/lots/${lot.slug}`}
-              className="text-[18px] font-normal leading-[1.5] text-[#1a1e26]"
+              className="line-clamp-2 min-h-[54px] text-[18px] font-normal leading-[1.5] text-[#1a1e26]"
             >
               {lot.title}
             </Link>
@@ -75,9 +74,19 @@ export function LotCard({ lot }: { lot: Lot; compact?: boolean }) {
           </div>
 
           <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-1">
-              <Icon src={icons.location} size={14} />
-              <span className="text-[12px] font-normal leading-[1.5] text-[#7a7b7c]">{lot.location}</span>
+            <div className="flex h-[18px] items-start">
+              <span className="mt-[2px] flex size-[14px] shrink-0 items-center justify-center overflow-hidden">
+                <img
+                  src={icons.location}
+                  alt=""
+                  width={14}
+                  height={14}
+                  className="block size-[14px] max-w-none"
+                />
+              </span>
+              <span className="ml-1 text-[12px] font-normal leading-[18px] text-[#7a7b7c]">
+                {lot.location}
+              </span>
             </div>
             <p className="text-[12px] font-normal leading-[1.5] text-[#1a1e26]">{lot.units} units</p>
             <div className="flex flex-col gap-1">
@@ -100,10 +109,10 @@ export function LotCard({ lot }: { lot: Lot; compact?: boolean }) {
           </div>
         </div>
 
-        <div className="flex gap-2.5">
+        <div className="mt-auto flex shrink-0 flex-nowrap gap-2.5">
           <Link
             to={`/lots/${lot.slug}`}
-            className="flex h-10 flex-1 items-center justify-center rounded-full bg-[#480516] px-3 text-[13px] font-medium leading-[1.5] text-white sm:px-6 sm:text-[14px]"
+            className="flex h-10 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full bg-[#480516] px-3 text-[13px] font-medium leading-[1.5] text-white sm:px-6 sm:text-[14px]"
           >
             Place Bid
           </Link>
@@ -114,7 +123,7 @@ export function LotCard({ lot }: { lot: Lot; compact?: boolean }) {
               e.stopPropagation()
               dispatch(openQuickView(canonicalLotId(lot.id)))
             }}
-            className="relative z-10 flex h-10 flex-1 items-center justify-center rounded-full border border-solid border-[#ebebec] bg-[#f5f5f6] px-3 text-[12px] font-medium leading-4 text-[#46494f] transition hover:bg-[#ebebec] sm:px-6"
+            className="relative z-10 flex h-10 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full border border-solid border-[#ebebec] bg-[#f5f5f6] px-3 text-[12px] font-medium leading-4 text-[#46494f] transition hover:bg-[#ebebec] sm:px-6"
           >
             Quickview
           </button>

@@ -166,7 +166,7 @@ export function CategoryPage() {
         {filtered.length === 0 ? (
           <EmptyState title="No lots found" body="Try clearing filters or choosing another category." />
         ) : (
-          <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 items-stretch gap-x-8 gap-y-12 sm:grid-cols-2 xl:grid-cols-3">
             {filtered.map((lot, i) => (
               <LotCard key={`${lot.id}-${i}`} lot={lot} />
             ))}

@@ -19,6 +19,7 @@ import { ContractsPage } from '@/pages/ContractsPage'
 import { PreferencesPage } from '@/pages/PreferencesPage'
 import { VerificationPage } from '@/pages/VerificationPage'
 import { ReferralsPage } from '@/pages/ReferralsPage'
+import { PrivacyPage, TermsPage } from '@/pages/LegalPages'
 import { AdminOverviewPage } from '@/pages/admin/AdminOverviewPage'
 import { AdminAnalyticsPage } from '@/pages/admin/AdminAnalyticsPage'
 import { AdminVerificationDetailPage, AdminVerificationPage } from '@/pages/admin/AdminVerificationPages'
@@ -75,6 +76,8 @@ export const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: 'categories/:slug', element: <CategoryPage /> },
       { path: 'lots/:id', element: <LotDetailPage /> },
+      { path: 'terms', element: <TermsPage /> },
+      { path: 'privacy', element: <PrivacyPage /> },
       {
         element: <AuthGuard />,
         children: [

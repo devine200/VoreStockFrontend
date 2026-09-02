@@ -151,7 +151,7 @@ export function SignupPage() {
     <div className="rounded-[24px] border border-[#ebebec] bg-white p-5 shadow-[0px_10px_20px_rgba(72,5,22,0.08)] sm:p-8">
       <h1 className="text-[24px] font-semibold leading-8 tracking-[-0.5px] text-[#1a1e26]">Create your account</h1>
       <p className="mt-1.5 text-[14px] leading-5 text-[#7a7b7c]">
-        Join thousands of buyers accessing verified auctions
+        Join thousands of buyers accessing verified auction lots
       </p>
       <form onSubmit={onSubmit} className="mt-7 space-y-4">
         <Field label="Full name">
@@ -185,7 +185,16 @@ export function SignupPage() {
         </Field>
         <label className="flex items-start gap-3 text-[14px] leading-[1.5] text-[#7a7b7c]">
           <span className="mt-0.5 size-5 shrink-0 rounded-md border-[1.5px] border-[#ebebec] bg-white" />
-          I agree to the Terms of Service and Privacy Policy
+          <span>
+            I agree to the{' '}
+            <Link to="/terms" className="font-semibold text-[#480516] hover:underline">
+              Terms of Service
+            </Link>{' '}
+            and{' '}
+            <Link to="/privacy" className="font-semibold text-[#480516] hover:underline">
+              Privacy Policy
+            </Link>
+          </span>
         </label>
         <Button type="submit" className="h-12 w-full rounded-xl bg-[#480516] font-semibold" size="lg">
           Create account →

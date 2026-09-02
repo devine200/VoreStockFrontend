@@ -42,14 +42,18 @@ export function ProductCarousel({
     <div className={cn('relative', className)}>
       <div className="overflow-hidden">
         <div
-          className="flex transition-transform duration-300 ease-out"
+          className="flex items-stretch transition-transform duration-300 ease-out"
           style={{
             gap: `${gap}px`,
             transform: `translateX(${offset})`,
           }}
         >
           {items.map((child, i) => (
-            <div key={i} className="shrink-0" style={{ flexBasis: itemBasis, width: itemBasis }}>
+            <div
+              key={i}
+              className="flex shrink-0 flex-col [&>*]:h-full [&>*]:min-h-0"
+              style={{ flexBasis: itemBasis, width: itemBasis }}
+            >
               {child}
             </div>
           ))}
