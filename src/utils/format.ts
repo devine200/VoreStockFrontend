@@ -15,6 +15,11 @@ export function cn(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(' ')
 }
 
+export function lotDisplayCode(id: string) {
+  const n = Number(id.replace(/\D/g, '')) || 0
+  return `LOT #${String(n).padStart(8, '0')}`
+}
+
 export function timeLeft(endsAt: string) {
   const ms = new Date(endsAt).getTime() - Date.now()
   if (ms <= 0) return { label: 'Ended', expired: true, hours: 0, minutes: 0, seconds: 0, days: 0 }

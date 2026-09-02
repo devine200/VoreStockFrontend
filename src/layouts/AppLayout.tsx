@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import { SiteHeader } from '@/components/shared/SiteHeader'
+import { SeoHead } from '@/components/shared/SeoHead'
 import { SiteFooter } from '@/components/shared/SiteFooter'
 import { ModalHost } from '@/components/shared/ModalHost'
 import { ToastHost } from '@/components/shared/ToastHost'
@@ -14,6 +15,7 @@ export function AppLayout() {
 
   return (
     <div className="min-h-screen overflow-x-clip bg-white">
+      <SeoHead />
       <SiteHeader />
       {/* Home keeps Figma CTA→footer overlap; other pages get visible white chrome */}
       <main

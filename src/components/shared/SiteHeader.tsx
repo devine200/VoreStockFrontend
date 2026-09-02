@@ -1,13 +1,13 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { CATEGORIES } from '@/api/fixtures'
+import { CATEGORIES, getLot } from '@/api/fixtures'
 import { AccountMenu } from '@/components/session/AccountMenu'
 import { icons, logoImg } from '@/assets'
 import { Icon } from '@/components/shared/Icon'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { setSearchQuery } from '@/store/slices/auctionsSlice'
 import { toggleAccountMenu } from '@/store/slices/uiSlice'
-import { cn } from '@/utils/format'
+import { cn, lotDisplayCode } from '@/utils/format'
 
 const TRUST_ITEMS = [
   { icon: icons.truck, label: 'Reliable Shipping' },
@@ -46,7 +46,14 @@ export function SiteHeader() {
   const [promoLeft, setPromoLeft] = useState(23 * 3600 + 15 * 60)
   const [navOpen, setNavOpen] = useState(false)
 
-  const isDetail = location.pathname.startsWith('/lots/')
+  const lotParam = location.pathname.match(/^\/lots\/([^/]+)/)?.[1]
+  const lots = useAppSelector((s) => s.auctions.lots)
+  const lot = lotParam
+    ? lots.find((l) => l.id === lotParam || l.slug === lotParam) ?? getLot(lotParam)
+    : undefined
+  const isDetail = Boolean(lotParam)
+  const isBids = location.pathname === '/bids'
+  const showSeoHeader = isDetail || isBids
   // Match category/home chrome: promo + search + nav + trust strip on all body-only pages
   const showTrust = !isDetail
 
@@ -200,28 +207,39 @@ export function SiteHeader() {
         </div>
       ) : null}
 
-      {isDetail ? (
+      {showSeoHeader ? (
         <div className="flex min-h-[37px] w-full flex-col gap-1 border-b border-[#f4f4f4] px-4 py-2 text-[12px] leading-4 text-[#46494f] sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-20">
-          <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+          <nav aria-label="Breadcrumb" className="flex min-w-0 flex-wrap items-center gap-1.5">
             <Link to="/categories/all" className="hover:text-[#1a1e26]">
               All Listings
             </Link>
-            <span className="text-[#c8c9cb]">›</span>
-            <span>Costco Wholesale</span>
-            <span className="text-[#c8c9cb]">›</span>
-            <span className="text-[#1a1e26]">LOT #00000004</span>
-          </div>
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px]">
-            <Icon src={icons.location} size={13} />
-            <span>Shipping to Wed, GA 30002</span>
-            <button type="button" className="font-medium text-[#480516]">
-              Edit
-            </button>
-            <span className="hidden text-[#c8c9cb] sm:inline">·</span>
-            <span>Ship time: 9.431 lbs</span>
-            <span className="hidden text-[#c8c9cb] sm:inline">·</span>
-            <span>Carrier: Old Dominion</span>
-          </div>
+            {isBids ? (
+              <>
+                <span className="text-[#c8c9cb]">›</span>
+                <span className="text-[#1a1e26]">Bids & Auctions</span>
+              </>
+            ) : (
+              <>
+                <span className="text-[#c8c9cb]">›</span>
+                <span>{lot?.brand || lot?.category || 'Lot'}</span>
+                <span className="text-[#c8c9cb]">›</span>
+                <span className="text-[#1a1e26]">{lot ? lotDisplayCode(lot.id) : 'Lot'}</span>
+              </>
+            )}
+          </nav>
+          {isDetail ? (
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px]">
+              <Icon src={icons.location} size={13} />
+              <span>Shipping to Wed, GA 30002</span>
+              <button type="button" className="font-medium text-[#480516]">
+                Edit
+              </button>
+              <span className="hidden text-[#c8c9cb] sm:inline">·</span>
+              <span>Ship time: 9.431 lbs</span>
+              <span className="hidden text-[#c8c9cb] sm:inline">·</span>
+              <span>Carrier: Old Dominion</span>
+            </div>
+          ) : null}
         </div>
       ) : null}
 
