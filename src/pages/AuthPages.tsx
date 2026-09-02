@@ -1,13 +1,14 @@
 import { FormEvent, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/shared/Button'
-import { Field, Input } from '@/components/shared/Field'
+import { Checkbox, Field, Input } from '@/components/shared/Field'
 import { Icon } from '@/components/shared/Icon'
 import eyeIcon from '@/assets/icons/eye.svg'
 import googleIcon from '@/assets/icons/google.svg'
 import { useAppDispatch } from '@/store/hooks'
 import { loginDummy } from '@/store/slices/sessionSlice'
 import { startOnboarding } from '@/store/slices/onboardingSlice'
+import { getRememberMe, getRememberedEmail, setRememberMe, setRememberedEmail } from '@/store/persistStorage'
 
 export function LoginPage() {
   const dispatch = useAppDispatch()
@@ -15,17 +16,28 @@ export function LoginPage() {
   const location = useLocation()
   const from = (location.state as { from?: string } | null)?.from ?? '/'
   const returningToAdmin = from.startsWith('/admin')
-  const [email, setEmail] = useState(returningToAdmin ? 'ops@vskglobal.com' : 'chukwuemeka@northbridge.ng')
+  const rememberedEmail = getRememberedEmail()
+  const [email, setEmail] = useState(
+    returningToAdmin ? 'ops@vskglobal.com' : rememberedEmail || 'chukwuemeka@northbridge.ng',
+  )
   const [password, setPassword] = useState('password')
   const [showPw, setShowPw] = useState(false)
+  const [rememberMe, setRememberMeChecked] = useState(getRememberMe())
+
+  const persistRememberMe = (loginEmail: string) => {
+    setRememberMe(rememberMe)
+    setRememberedEmail(rememberMe ? loginEmail : null)
+  }
 
   const signInAsAdmin = (adminEmail = 'ops@vskglobal.com') => {
+    persistRememberMe(adminEmail)
     dispatch(loginDummy({ email: adminEmail, name: 'Ops Admin', role: 'admin' }))
     navigate(returningToAdmin ? from : '/admin')
   }
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
+    persistRememberMe(email)
     const isAdmin = returningToAdmin || /ops@|admin/i.test(email)
     if (isAdmin) {
       signInAsAdmin(email)
@@ -82,10 +94,14 @@ export function LoginPage() {
           </div>
         </div>
 
-        <label className="flex items-center gap-3 text-[12px] leading-5 text-[#7a7b7c]">
-          <span className="size-5 rounded-md border-[1.5px] border-[#ebebec] bg-white" />
+        <Checkbox
+          name="rememberMe"
+          checked={rememberMe}
+          onChange={setRememberMeChecked}
+          className="text-[12px] leading-5 text-[#7a7b7c]"
+        >
           Remember me for 30 days
-        </label>
+        </Checkbox>
 
         <Button type="submit" className="h-12 w-full rounded-xl bg-[#480516] font-semibold" size="lg">
           Sign in →
@@ -110,6 +126,7 @@ export function LoginPage() {
         type="button"
         className="flex h-[46px] w-full items-center justify-center gap-2 rounded-xl border border-[#ebebec] bg-white text-[14px] font-medium text-[#46494f] transition hover:bg-[#f4f4f4]"
         onClick={() => {
+          persistRememberMe('demo@vskglobal.com')
           dispatch(loginDummy({ email: 'demo@vskglobal.com', name: 'Demo Buyer' }))
           navigate(returningToAdmin ? '/' : from)
         }}
@@ -135,6 +152,7 @@ export function SignupPage() {
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
+  const [agreed, setAgreed] = useState(false)
 
   const finishSignup = (signupEmail: string, signupName: string) => {
     dispatch(loginDummy({ email: signupEmail, name: signupName }))
@@ -144,6 +162,7 @@ export function SignupPage() {
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
+    if (!agreed) return
     finishSignup(email, name || 'New Buyer')
   }
 
@@ -183,19 +202,33 @@ export function SignupPage() {
         <Field label="Confirm password">
           <Input type="password" placeholder="Enter your password" required />
         </Field>
-        <label className="flex items-start gap-3 text-[14px] leading-[1.5] text-[#7a7b7c]">
-          <span className="mt-0.5 size-5 shrink-0 rounded-md border-[1.5px] border-[#ebebec] bg-white" />
+        <Checkbox
+          name="agreeToTerms"
+          checked={agreed}
+          onChange={setAgreed}
+          required
+          align="start"
+          className="text-[14px] leading-[1.5] text-[#7a7b7c]"
+        >
           <span>
             I agree to the{' '}
-            <Link to="/terms" className="font-semibold text-[#480516] hover:underline">
+            <Link
+              to="/terms"
+              className="font-semibold text-[#480516] hover:underline"
+              onClick={(e) => e.stopPropagation()}
+            >
               Terms of Service
             </Link>{' '}
             and{' '}
-            <Link to="/privacy" className="font-semibold text-[#480516] hover:underline">
+            <Link
+              to="/privacy"
+              className="font-semibold text-[#480516] hover:underline"
+              onClick={(e) => e.stopPropagation()}
+            >
               Privacy Policy
             </Link>
           </span>
-        </label>
+        </Checkbox>
         <Button type="submit" className="h-12 w-full rounded-xl bg-[#480516] font-semibold" size="lg">
           Create account →
         </Button>
@@ -207,8 +240,12 @@ export function SignupPage() {
       </div>
       <button
         type="button"
-        className="flex h-[46px] w-full items-center justify-center gap-2 rounded-xl border border-[#ebebec] bg-white text-[14px] font-medium text-[#46494f]"
-        onClick={() => finishSignup('demo@vskglobal.com', 'Demo Buyer')}
+        className="flex h-[46px] w-full items-center justify-center gap-2 rounded-xl border border-[#ebebec] bg-white text-[14px] font-medium text-[#46494f] disabled:cursor-not-allowed disabled:opacity-50"
+        onClick={() => {
+          if (!agreed) return
+          finishSignup('demo@vskglobal.com', 'Demo Buyer')
+        }}
+        disabled={!agreed}
       >
         <Icon src={googleIcon} size={16} />
         Google
