@@ -7,6 +7,9 @@ import { updatePrefs } from '@/store/slices/accountSlices'
 import { updateProfile } from '@/store/slices/sessionSlice'
 import { showSuccess, showToast } from '@/store/slices/uiSlice'
 import { cn } from '@/utils/format'
+import { Icon } from '@/components/shared/Icon'
+import arrowDownSm from '@/assets/icons/arrow-down-sm.svg'
+import deviceIcon from '@/assets/icons/device.svg'
 
 type TabId = 'profile' | 'security'
 
@@ -65,21 +68,8 @@ function Toggle({
   )
 }
 
-function DeviceIcon({ kind }: { kind: 'desktop' | 'mobile' }) {
-  if (kind === 'mobile') {
-    return (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <rect x="7" y="2" width="10" height="20" rx="2" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M10 18h4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      </svg>
-    )
-  }
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="1.6" />
-      <path d="M8 20h8M12 16v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  )
+function DeviceIcon({ kind: _kind }: { kind: 'desktop' | 'mobile' }) {
+  return <Icon src={deviceIcon} size={14} />
 }
 
 export function ProfilePage() {
@@ -519,16 +509,11 @@ export function ProfilePage() {
               <span className="flex items-center gap-2 text-[14px] font-semibold text-[#c62828]">
                 <span aria-hidden>⚠</span> Danger zone
               </span>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                className={cn('text-[#c62828] transition', dangerOpen && 'rotate-180')}
-                aria-hidden
-              >
-                <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-              </svg>
+              <Icon
+                src={arrowDownSm}
+                size={16}
+                className={cn('transition', dangerOpen && 'rotate-180')}
+              />
             </button>
             {dangerOpen ? (
               <div className="border-t border-[#f5c2c0] px-5 py-4">

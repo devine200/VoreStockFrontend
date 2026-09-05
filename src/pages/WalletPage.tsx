@@ -8,6 +8,15 @@ import { rotateDepositAddress, withdraw } from '@/store/slices/walletSlice'
 import { showSuccess, showToast } from '@/store/slices/uiSlice'
 import { cn } from '@/utils/format'
 import type { WalletTx } from '@/types'
+import walletAvailableIcon from '@/assets/icons/wallet-available.svg'
+import walletReservedIcon from '@/assets/icons/wallet-reserved.svg'
+import walletEscrowIcon from '@/assets/icons/wallet-escrow.svg'
+import walletRefundsIcon from '@/assets/icons/wallet-refunds.svg'
+import statementIcon from '@/assets/icons/statement.svg'
+import depositIcon from '@/assets/icons/deposit.svg'
+import withdrawIcon from '@/assets/icons/withdraw.svg'
+import copyIcon from '@/assets/icons/copy.svg'
+import infoIcon from '@/assets/icons/info.svg'
 
 const PROVIDERS = [
   { id: 'circle-usdc', label: 'Circle — USDC (~2 min)', asset: 'USDC (ERC20)' },
@@ -150,11 +159,8 @@ export function WalletPage() {
       foot: 'Ready to bid or withdraw',
       valueClass: 'text-[#1f7a45]',
       icon: (
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#e8f6ee] text-[#1f7a45]">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="1.8" />
-            <path d="M2 10h20" stroke="currentColor" strokeWidth="1.8" />
-          </svg>
+        <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-[#f5f5f6]">
+          <Icon src={walletAvailableIcon} size={16} />
         </span>
       ),
     },
@@ -164,15 +170,8 @@ export function WalletPage() {
       foot: 'Held against active bids',
       valueClass: 'text-[#1a1e26]',
       icon: (
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#fff6e5] text-[#b45309]">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <path
-              d="M12 3 4 7v5c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V7l-8-4Z"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinejoin="round"
-            />
-          </svg>
+        <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-[#f5f5f6]">
+          <Icon src={walletReservedIcon} size={16} />
         </span>
       ),
     },
@@ -182,11 +181,8 @@ export function WalletPage() {
       foot: 'Releases on delivery',
       valueClass: 'text-[#1a1e26]',
       icon: (
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#f3e8ff] text-[#7c3aed]">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.8" />
-            <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="1.8" />
-          </svg>
+        <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-[#f5f5f6]">
+          <Icon src={walletEscrowIcon} size={16} />
         </span>
       ),
     },
@@ -196,16 +192,8 @@ export function WalletPage() {
       foot: 'Credited within 24h',
       valueClass: 'text-[#1a1e26]',
       icon: (
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#f3f4f6] text-[#6b7280]">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <path
-              d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+        <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-[#f5f5f6]">
+          <Icon src={walletRefundsIcon} size={16} />
         </span>
       ),
     },
@@ -225,14 +213,7 @@ export function WalletPage() {
               variant="secondary"
               onClick={() => dispatch(showToast('Statement download started'))}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-                <path
-                  d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9l-5-6Z"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                />
-                <path d="M14 3v6h6M8 13h8M8 17h5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-              </svg>
+              <Icon src={statementIcon} size={12} />
               Statement
             </Button>
           </div>
@@ -269,7 +250,7 @@ export function WalletPage() {
                 mode === 'deposit' ? 'bg-white text-[#1a1e26] shadow-sm' : 'text-[#7a7b7c]',
               )}
             >
-              <span aria-hidden>↓</span> Deposit
+              <Icon src={depositIcon} size={13} /> Deposit
             </button>
             <button
               type="button"
@@ -279,7 +260,7 @@ export function WalletPage() {
                 mode === 'withdraw' ? 'bg-white text-[#1a1e26] shadow-sm' : 'text-[#7a7b7c]',
               )}
             >
-              <span aria-hidden>↑</span> Withdraw
+              <Icon src={withdrawIcon} size={13} /> Withdraw
             </button>
           </div>
 
@@ -311,15 +292,18 @@ export function WalletPage() {
                   <button
                     type="button"
                     onClick={copyAddress}
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-lg px-2.5 py-1.5 text-[12px] font-medium text-[#480516] hover:bg-[#f9f5f6]"
+                    className="absolute right-1.5 top-1/2 inline-flex -translate-y-1/2 items-center gap-1 rounded-lg px-2.5 py-1.5 text-[12px] font-medium text-[#480516] hover:bg-[#f9f5f6]"
                   >
+                    <Icon src={copyIcon} size={12} />
                     Copy
                   </button>
                 </div>
               </label>
 
               <div className="mt-4 rounded-xl border border-[#f2d9a8] bg-[#fff8e6] px-3 py-3 text-[12px] leading-relaxed text-[#8a6116]">
-                <span className="mr-1.5 inline-block font-semibold">ℹ</span>
+                <span className="mr-1.5 inline-flex align-middle">
+                  <Icon src={infoIcon} size={13} />
+                </span>
                 Send only the selected asset on the matching network. Deposits credit after 12 confirmations;
                 wrong-network transfers cannot be recovered.
               </div>

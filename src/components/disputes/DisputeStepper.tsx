@@ -1,4 +1,6 @@
 import { cn } from '@/utils/format'
+import { Icon } from '@/components/shared/Icon'
+import { icons } from '@/assets'
 
 const STEPS = ['Issue', 'Evidence', 'Review', 'Resolution'] as const
 
@@ -19,15 +21,7 @@ export function DisputeStepper({ completedSteps }: { completedSteps: number }) {
                 )}
               >
                 {done ? (
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
-                    <path
-                      d="M2 5.2 4 7.2 8 2.8"
-                      stroke="white"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <Icon src={icons.check} size={10} />
                 ) : (
                   i + 1
                 )}

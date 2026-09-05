@@ -36,20 +36,12 @@ function StarRow({ filled }: { filled: number }) {
   return (
     <span className="inline-flex items-center gap-1">
       {Array.from({ length: 5 }).map((_, i) => (
-        <svg
+        <Icon
           key={i}
-          width="14"
-          height="14"
-          viewBox="0 0 14 14"
-          fill="none"
-          aria-hidden
-          className={i < filled ? 'text-[#f2bc1b]' : 'text-[#c8c9cb]'}
-        >
-          <path
-            d="M7 1.2l1.54 3.12 3.44.5-2.49 2.43.59 3.43L7 9.16l-3.08 1.62.59-3.43L2.02 4.82l3.44-.5L7 1.2z"
-            fill="currentColor"
-          />
-        </svg>
+          src={icons.star}
+          size={14}
+          className={i < filled ? '' : 'opacity-30'}
+        />
       ))}
     </span>
   )
@@ -263,15 +255,7 @@ export function CategoryFilters({
                   )}
                 >
                   {checked ? (
-                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none" aria-hidden>
-                      <path
-                        d="M1 4l2.5 2.5L9 1"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
+                    <Icon src={icons.check} size={10} />
                   ) : null}
                 </span>
                 <StarRow filled={n} />

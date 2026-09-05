@@ -1,15 +1,11 @@
 import { ReferralStatusBadge } from '@/components/referrals/ReferralStatusBadge'
+import { Icon } from '@/components/shared/Icon'
+import usersIcon from '@/assets/icons/users.svg'
+import infoIcon from '@/assets/icons/info.svg'
 import type { ReferralContact } from '@/types'
 
 function UsersIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="9" cy="8" r="3" stroke="currentColor" strokeWidth="1.7" />
-      <path d="M3.5 19c.6-3 3-5 5.5-5s4.9 2 5.5 5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      <circle cx="17" cy="9" r="2.4" stroke="currentColor" strokeWidth="1.7" />
-      <path d="M16.2 14.2c2 .4 3.8 1.8 4.3 4.3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-    </svg>
-  )
+  return <Icon src={usersIcon} size={20} />
 }
 
 export function NetworkRoster({
@@ -34,11 +30,7 @@ export function NetworkRoster({
           </div>
         </div>
         <p className="flex items-center gap-2 text-[12px] text-[#9ca3af]">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7" />
-            <path d="M12 11v5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-            <circle cx="12" cy="8" r="0.9" fill="currentColor" />
-          </svg>
+          <Icon src={infoIcon} size={14} />
           Rewards earned once a qualifying purchase is completed.
         </p>
       </div>

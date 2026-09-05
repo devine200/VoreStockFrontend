@@ -24,11 +24,7 @@ function MenuIcon() {
 }
 
 function CloseIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
-      <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  )
+  return <Icon src={icons.close} size={16} />
 }
 
 function categoryTo(slug: string) {

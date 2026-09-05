@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
-import { Icon } from '@/components/shared/Icon'
 import { adminIcons, adminLogo } from '@/assets/admin'
+import { icons } from '@/assets'
+import { Icon } from '@/components/shared/Icon'
 import { cn } from '@/utils/format'
 
 function OverviewGlyph({ active }: { active: boolean }) {
@@ -148,9 +149,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
             aria-label="Close navigation"
             onClick={onNavigate}
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-              <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
+            <Icon src={icons.close} size={16} className="opacity-80 brightness-0 invert" />
           </button>
         ) : null}
       </div>

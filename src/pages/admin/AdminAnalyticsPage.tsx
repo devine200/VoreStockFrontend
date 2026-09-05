@@ -15,6 +15,8 @@ import {
   AdminTabs,
 } from '@/components/admin/ui'
 import type { AdminAnalyticsPanel } from '@/types/admin'
+import { Icon } from '@/components/shared/Icon'
+import { adminIcons } from '@/assets/admin'
 
 function AnalyticsPanel({ panel }: { panel: AdminAnalyticsPanel }) {
   if (panel.type === 'line' && panel.points) {
@@ -99,9 +101,7 @@ export function AdminAnalyticsPage() {
           type="button"
           className="inline-flex h-8 w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-[13px] font-medium text-slate-600 hover:bg-slate-50 sm:w-auto"
         >
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden>
-            <path d="M6.5 1v7M6.5 8l-2.5-2.5M6.5 8l2.5-2.5M2 11h9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <Icon src={adminIcons.exportCsv} size={13} />
           Export CSV
         </button>
       </div>

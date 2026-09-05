@@ -1,43 +1,8 @@
 import { Button } from '@/components/shared/Button'
-
-function LinkIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M10 13a5 5 0 0 0 7.07.07l1.41-1.41a5 5 0 0 0-7.07-7.07L10 6"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-      <path
-        d="M14 11a5 5 0 0 0-7.07-.07L5.52 12.34a5 5 0 0 0 7.07 7.07L14 18"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-    </svg>
-  )
-}
-
-function CopyIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="1.7" />
-      <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" strokeWidth="1.7" />
-    </svg>
-  )
-}
-
-function ShareIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="18" cy="5" r="2.4" stroke="currentColor" strokeWidth="1.7" />
-      <circle cx="6" cy="12" r="2.4" stroke="currentColor" strokeWidth="1.7" />
-      <circle cx="18" cy="19" r="2.4" stroke="currentColor" strokeWidth="1.7" />
-      <path d="M8.2 10.8 15.7 6.4M8.2 13.2l7.5 4.4" stroke="currentColor" strokeWidth="1.7" />
-    </svg>
-  )
-}
+import { Icon } from '@/components/shared/Icon'
+import linkIcon from '@/assets/icons/link.svg'
+import copyIcon from '@/assets/icons/copy.svg'
+import shareIcon from '@/assets/icons/share.svg'
 
 export function ReferralSharePanel({
   code,
@@ -55,8 +20,8 @@ export function ReferralSharePanel({
   return (
     <section className="flex min-w-0 flex-1 flex-col rounded-2xl border border-border bg-white p-6">
       <div className="flex items-start gap-3">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-wine-50 text-wine-500">
-          <LinkIcon />
+        <span className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-wine-50">
+          <Icon src={linkIcon} size={20} />
         </span>
         <div>
           <h2 className="text-[16px] font-semibold text-[#1a1e26]">Your Referral Link</h2>
@@ -67,18 +32,18 @@ export function ReferralSharePanel({
       </div>
       <div className="mt-5 flex flex-col gap-3 sm:flex-row">
         <div className="flex min-w-0 flex-1 items-center gap-3 rounded-xl border border-border bg-[#fafafa] px-4 py-3">
-          <span className="shrink-0 text-[#9ca3af]">
-            <LinkIcon />
+          <span className="shrink-0">
+            <Icon src={linkIcon} size={16} />
           </span>
           <p className="truncate text-[14px] text-[#1a1e26]">{link}</p>
         </div>
         <div className="flex shrink-0 gap-2">
           <Button type="button" className="h-[46px] px-4" onClick={onCopyLink}>
-            <CopyIcon />
+            <Icon src={copyIcon} size={15} className="[&_img]:brightness-0 [&_img]:invert" />
             Copy Link
           </Button>
           <Button type="button" variant="secondary" className="h-[46px] px-4" onClick={onShare}>
-            <ShareIcon />
+            <Icon src={shareIcon} size={15} />
             Share
           </Button>
         </div>
@@ -93,7 +58,7 @@ export function ReferralSharePanel({
           onClick={onCopyCode}
           className="inline-flex items-center gap-1.5 text-[13px] font-medium text-wine-500 hover:underline"
         >
-          <CopyIcon />
+          <Icon src={copyIcon} size={15} />
           Copy code
         </button>
       </div>

@@ -1,10 +1,15 @@
 import { FormEvent, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/shared/Button'
+import { Icon } from '@/components/shared/Icon'
 import { PageHeader } from '@/components/shared/PageChrome'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { showSuccess, showToast } from '@/store/slices/uiSlice'
 import { cn, formatMoney } from '@/utils/format'
+import clockIcon from '@/assets/icons/clock.svg'
+import fileIcon from '@/assets/icons/file.svg'
+import uploadIcon from '@/assets/icons/upload.svg'
+import checkCircleIcon from '@/assets/icons/check-circle.svg'
 
 type StepStatus = 'verified' | 'pending' | 'unverified'
 
@@ -82,18 +87,15 @@ function StatusPill({ status }: { status: StepStatus | 'review' }) {
 function StepIcon({ status }: { status: StepStatus }) {
   if (status === 'verified') {
     return (
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#e8f6ee] text-[#1f7a45]">
-        ✓
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#e8f6ee]">
+        <Icon src={checkCircleIcon} size={16} />
       </span>
     )
   }
   if (status === 'pending') {
     return (
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#fff6e5] text-[#b45309]">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-          <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.8" />
-          <path d="M12 8v4l2.5 1.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-        </svg>
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#fff6e5]">
+        <Icon src={clockIcon} size={16} />
       </span>
     )
   }
@@ -101,25 +103,11 @@ function StepIcon({ status }: { status: StepStatus }) {
 }
 
 function DocIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9l-5-6Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-      />
-      <path d="M14 3v6h6" stroke="currentColor" strokeWidth="1.6" />
-    </svg>
-  )
+  return <Icon src={fileIcon} size={18} />
 }
 
 function UploadIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M12 16V6M8 9l4-4 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M4 18h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  )
+  return <Icon src={uploadIcon} size={14} />
 }
 
 export function VerificationPage() {
@@ -174,10 +162,7 @@ export function VerificationPage() {
       <div className="flex flex-col gap-3 rounded-xl border border-[#f2d9a8] bg-[#fff8e6] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex gap-3">
           <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#fff1cc] text-[#b45309]">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.8" />
-              <path d="M12 8v4l2.5 1.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
+            <Icon src={clockIcon} size={16} />
           </span>
           <p className="text-[14px] leading-relaxed text-[#5c4a1f]">
             <span className="font-semibold text-[#1a1e26]">Business verification in review</span>

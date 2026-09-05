@@ -1,5 +1,7 @@
 import { NotificationFilters, type NotificationFilter } from '@/components/notifications/NotificationFilters'
 import { NotificationRow } from '@/components/notifications/NotificationRow'
+import { Icon } from '@/components/shared/Icon'
+import markReadIcon from '@/assets/icons/mark-read.svg'
 import {
   notificationGroup,
   type NotificationGroup,
@@ -49,23 +51,15 @@ export function NotificationFeed({
             </span>
           ) : null}
         </div>
-        <button
-          type="button"
-          onClick={onMarkAllRead}
-          disabled={unreadCount === 0}
-          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-wine-500 hover:underline disabled:pointer-events-none disabled:opacity-40"
-        >
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
-            <path
-              d="M2 6.2 4.6 8.8 10 3.2"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          Mark all as read
-        </button>
+          <button
+            type="button"
+            onClick={onMarkAllRead}
+            disabled={unreadCount === 0}
+            className="inline-flex items-center gap-1.5 text-[13px] font-medium text-wine-500 hover:underline disabled:pointer-events-none disabled:opacity-40"
+          >
+            <Icon src={markReadIcon} size={12} />
+            Mark all as read
+          </button>
       </div>
       <NotificationFilters value={filter} counts={filterCounts} onChange={onFilterChange} />
       <div>

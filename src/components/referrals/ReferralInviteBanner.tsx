@@ -1,11 +1,5 @@
-function CopyIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="1.7" />
-      <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" strokeWidth="1.7" />
-    </svg>
-  )
-}
+import { Icon } from '@/components/shared/Icon'
+import copyIcon from '@/assets/icons/copy.svg'
 
 export function ReferralInviteBanner({ onCopy }: { onCopy: () => void }) {
   return (
@@ -21,7 +15,7 @@ export function ReferralInviteBanner({ onCopy }: { onCopy: () => void }) {
         onClick={onCopy}
         className="inline-flex h-12 shrink-0 items-center gap-2 rounded-xl bg-white px-5 text-[14px] font-medium text-wine-500 hover:bg-wine-50"
       >
-        <CopyIcon />
+        <Icon src={copyIcon} size={15} />
         Copy Referral Link
       </button>
     </section>

@@ -2,6 +2,8 @@ import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { icons } from '@/assets'
 import { Icon } from '@/components/shared/Icon'
+import watchCheckIcon from '@/assets/icons/watch-check.svg'
+import menuSlidersIcon from '@/assets/icons/menu-sliders.svg'
 import { Button } from '@/components/shared/Button'
 import { EmptyState, PageHeader } from '@/components/shared/PageChrome'
 import { Modal } from '@/components/shared/Modal'
@@ -68,15 +70,7 @@ function WatchRow({ lot, rowRef }: { lot: Lot; rowRef?: (el: HTMLDivElement | nu
             {lotCode(lot)} · {lot.category} · {lot.brand ?? 'Seller'} · {lot.bidCount} bids
           </p>
           <span className="mt-1.5 inline-flex items-center gap-1 rounded bg-[#f3f4f6] px-2 py-0.5 text-[11px] text-[#4b5563]">
-            <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden>
-              <path
-                d="M3.5 8.5 6.5 11.5 12.5 4.5"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Icon src={watchCheckIcon} size={10} />
             {lot.condition}
           </span>
         </div>
@@ -122,12 +116,7 @@ function WatchRow({ lot, rowRef }: { lot: Lot; rowRef?: (el: HTMLDivElement | nu
           }}
           className="flex h-9 w-9 items-center justify-center rounded-lg text-[#f2bc1b] transition hover:bg-[#fff8e6]"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden>
-            <path
-              d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
-              fill="currentColor"
-            />
-          </svg>
+          <Icon src={icons.star} size={20} />
         </button>
       </div>
     </div>
@@ -298,14 +287,7 @@ export function WatchlistPage() {
                 />
               </div>
               <label className="relative inline-flex h-9 items-center gap-1.5 rounded-lg border border-[#ebebec] px-3 text-[13px] text-[#1a1e26]">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-                  <path
-                    d="M3 6h18M6 12h12M10 18h4"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                  />
-                </svg>
+                <Icon src={menuSlidersIcon} size={14} />
                 <span className="text-[#7a7b7c]">Sort:</span>
                 <select
                   value={sort}

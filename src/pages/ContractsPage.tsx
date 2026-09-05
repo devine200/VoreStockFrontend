@@ -2,11 +2,14 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/shared/Button'
 import { EmptyState, PageHeader } from '@/components/shared/PageChrome'
+import { Icon } from '@/components/shared/Icon'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { signContract } from '@/store/slices/accountSlices'
 import { showSuccess, showToast } from '@/store/slices/uiSlice'
 import { cn } from '@/utils/format'
 import type { Contract } from '@/types'
+import fileIcon from '@/assets/icons/file.svg'
+import arrowDownSm from '@/assets/icons/arrow-down-sm.svg'
 
 type AccordionKey = 'terms' | 'documents' | 'activity'
 
@@ -61,16 +64,7 @@ function StatusPill({ status }: { status: Contract['status'] }) {
 }
 
 function DocIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9l-5-6Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-      />
-      <path d="M14 3v6h6" stroke="currentColor" strokeWidth="1.6" />
-    </svg>
-  )
+  return <Icon src={fileIcon} size={18} className={className} />
 }
 
 function Accordion({
@@ -92,16 +86,11 @@ function Accordion({
         className="flex w-full items-center justify-between py-4 text-left"
       >
         <span className="text-[14px] font-semibold text-[#1a1e26]">{title}</span>
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          className={cn('text-[#7a7b7c] transition', open ? 'rotate-180' : '')}
-          aria-hidden
-        >
-          <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-        </svg>
+        <Icon
+          src={arrowDownSm}
+          size={16}
+          className={cn('transition', open ? 'rotate-180' : '')}
+        />
       </button>
       {open ? <div className="pb-4">{children}</div> : null}
     </div>

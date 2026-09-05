@@ -1,14 +1,9 @@
 import { Button } from '@/components/shared/Button'
+import { Icon } from '@/components/shared/Icon'
+import giftIcon from '@/assets/icons/gift.svg'
 
 function GiftIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M4 11h16v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9Z" stroke="currentColor" strokeWidth="1.7" />
-      <path d="M3 7h18v4H3V7Z" stroke="currentColor" strokeWidth="1.7" />
-      <path d="M12 7v15" stroke="currentColor" strokeWidth="1.7" />
-      <path d="M12 7c0-2-1.2-3.5-3-3.5S6 5 7.5 7H12Zm0 0c0-2 1.2-3.5 3-3.5S18 5 16.5 7H12Z" stroke="currentColor" strokeWidth="1.7" />
-    </svg>
-  )
+  return <Icon src={giftIcon} size={20} />
 }
 
 export function FreightCreditsPanel({

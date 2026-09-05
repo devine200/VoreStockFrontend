@@ -223,9 +223,7 @@ export function QuickViewDrawer() {
             className="flex size-8 shrink-0 items-center justify-center rounded-lg text-[#7a7b7c] transition hover:bg-[#f5f5f6] hover:text-[#1a1e26]"
             aria-label="Close"
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-              <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
+            <Icon src={icons.close} size={16} />
           </button>
         </header>
 

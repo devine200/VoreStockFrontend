@@ -36,6 +36,7 @@ import reject from './reject.svg'
 import refresh from './refresh.svg'
 import dotDone from './dot-done.svg'
 import dotPending from './dot-pending.svg'
+import exportCsv from './export.svg'
 
 export const adminLogo = logo
 
@@ -77,4 +78,5 @@ export const adminIcons = {
   refresh,
   dotDone,
   dotPending,
+  exportCsv,
 }

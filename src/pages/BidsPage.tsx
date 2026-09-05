@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { LOTS, getLot } from '@/api/fixtures'
-import { icons } from '@/assets'
 import { Icon } from '@/components/shared/Icon'
 import { Button } from '@/components/shared/Button'
 import { EmptyState, PageHeader } from '@/components/shared/PageChrome'
@@ -10,6 +9,8 @@ import { openModal, showToast } from '@/store/slices/uiSlice'
 import { cn, formatMoney } from '@/utils/format'
 import { useCountdown } from '@/hooks/useCountdown'
 import type { Bid, Lot } from '@/types'
+import searchFieldIcon from '@/assets/icons/search-field.svg'
+import filterIcon from '@/assets/icons/filter.svg'
 
 const PAGE_SIZE = 4
 
@@ -472,34 +473,28 @@ export function BidsPage() {
 
           <div className="flex items-center gap-2 pb-2 sm:pb-0">
             <div className="relative">
-              <Icon
-                src={icons.search}
-                size={14}
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 opacity-50"
-              />
+              <span
+                className="pointer-events-none absolute left-3 top-1/2 inline-flex -translate-y-1/2 overflow-hidden"
+                style={{ width: 15, height: 13 }}
+              >
+                <img src={searchFieldIcon} alt="" className="block size-full max-w-none" />
+              </span>
               <input
                 value={query}
                 onChange={(e) => {
                   setQuery(e.target.value)
                   setPage(1)
                 }}
-                placeholder="Search lots..."
-                className="h-9 w-[180px] rounded-lg border border-[#ebebec] bg-white pl-8 pr-3 text-[13px] outline-none focus:border-[#480516] sm:w-[220px]"
+                placeholder="Search lots…"
+                className="h-[34px] w-[180px] rounded-lg border border-[#ebebec] bg-[#f5f5f6] pl-8 pr-3 text-[12px] outline-none focus:border-[#480516] sm:w-[220px]"
               />
             </div>
             <button
               type="button"
               onClick={() => dispatch(showToast('Filters coming soon'))}
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-[#ebebec] px-3 text-[13px] text-[#1a1e26] hover:bg-[#f9fafb]"
+              className="inline-flex h-[34px] items-center gap-1.5 rounded-lg border border-[#ebebec] px-3 text-[12px] text-[#46494f] hover:bg-[#f9fafb]"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-                <path
-                  d="M4 6h16M7 12h10M10 18h4"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                />
-              </svg>
+              <Icon src={filterIcon} size={12} />
               Filter
             </button>
           </div>

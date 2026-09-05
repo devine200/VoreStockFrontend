@@ -217,7 +217,7 @@ export function LotDetailPage() {
               {lot.location}
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <Icon src={icons.coin} size={13} />
+              <Icon src={icons.retailBag} size={13} />
               Ext. Retail {formatMoney(lot.msrp)}
             </span>
           </div>
