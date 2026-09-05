@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { LotCard } from '@/components/auction/LotCard'
 import {
@@ -7,10 +7,13 @@ import {
   type CategoryFilterState,
 } from '@/components/auction/CategoryFilters'
 import { EmptyState } from '@/components/shared/PageChrome'
+import { Pagination } from '@/components/shared/Pagination'
 import { Icon } from '@/components/shared/Icon'
 import { icons } from '@/assets'
 import { useAppSelector } from '@/store/hooks'
 import type { Lot } from '@/types'
+
+const PAGE_SIZE = 6
 
 /** Map sidebar product categories → lot.categorySlug when possible */
 const SIDEBAR_TO_SLUG: Record<string, string | null> = {
@@ -49,15 +52,39 @@ function sortLots(lots: Lot[], condition: string): Lot[] {
 
 export function CategoryPage() {
   const { slug = 'all' } = useParams()
-  const [params] = useSearchParams()
+  const [params, setParams] = useSearchParams()
   const q = params.get('q') ?? ''
   const lots = useAppSelector((s) => s.auctions.lots)
   const storeQuery = useAppSelector((s) => s.auctions.searchQuery)
   const query = q || storeQuery
 
+  const pageFromUrl = Number(params.get('page'))
+  const page = Number.isFinite(pageFromUrl) && pageFromUrl > 0 ? Math.floor(pageFromUrl) : 1
+
   const [filters, setFilters] = useState<CategoryFilterState>(DEFAULT_CATEGORY_FILTERS)
   const [appliedMax, setAppliedMax] = useState(DEFAULT_CATEGORY_FILTERS.maxPrice)
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const listTopRef = useRef<HTMLDivElement>(null)
+
+  const goToPage = useCallback(
+    (nextPage: number, scroll = true) => {
+      setParams(
+        (prev) => {
+          const next = new URLSearchParams(prev)
+          if (nextPage <= 1) next.delete('page')
+          else next.set('page', String(nextPage))
+          return next
+        },
+        { replace: true },
+      )
+      if (scroll) listTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    },
+    [setParams],
+  )
+
+  const resetToFirstPage = () => {
+    if (page > 1) goToPage(1, false)
+  }
 
   useEffect(() => {
     if (!filtersOpen) return
@@ -71,7 +98,7 @@ export function CategoryPage() {
     const sidebarSlug = filters.category ? SIDEBAR_TO_SLUG[filters.category] : null
     const effectiveSlug = sidebarSlug && sidebarSlug !== 'all' ? sidebarSlug : slug
 
-    let list = lots.filter((lot) => {
+    const list = lots.filter((lot) => {
       const catOk = effectiveSlug === 'all' || lot.categorySlug === effectiveSlug
       const priceOk = lot.currentBid <= appliedMax
       const qOk =
@@ -82,32 +109,33 @@ export function CategoryPage() {
       return catOk && priceOk && qOk
     })
 
-    list = sortLots(list, filters.condition)
-
-    // Design shows a dense 3×3 grid — repeat from the pool without mutating lot ids
-    if (list.length > 0 && list.length < 9) {
-      const padded: Lot[] = []
-      while (padded.length < 9) {
-        for (const lot of list) {
-          if (padded.length >= 9) break
-          padded.push(lot)
-        }
-      }
-      return padded
-    }
-    return list
+    return sortLots(list, filters.condition)
   }, [lots, slug, query, filters.category, filters.condition, appliedMax])
 
-  const resultCount = filters.category || appliedMax < 50000 || query ? filtered.length : 50
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const pageSafe = Math.min(page, pageCount)
+  const paged = filtered.slice((pageSafe - 1) * PAGE_SIZE, pageSafe * PAGE_SIZE)
+
+  useEffect(() => {
+    if (page === pageSafe) return
+    goToPage(pageSafe, false)
+  }, [page, pageSafe, goToPage])
 
   const filterPanel = (
     <CategoryFilters
       value={filters}
-      onChange={setFilters}
-      onApplyPrice={(maxPrice) => setAppliedMax(maxPrice)}
+      onChange={(next) => {
+        setFilters(next)
+        resetToFirstPage()
+      }}
+      onApplyPrice={(maxPrice) => {
+        setAppliedMax(maxPrice)
+        resetToFirstPage()
+      }}
       onClear={() => {
         setFilters(DEFAULT_CATEGORY_FILTERS)
         setAppliedMax(DEFAULT_CATEGORY_FILTERS.maxPrice)
+        resetToFirstPage()
       }}
     />
   )
@@ -140,10 +168,10 @@ export function CategoryPage() {
         </div>
       ) : null}
 
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1" ref={listTopRef}>
         <div className="mb-6 flex min-h-11 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-[20px] font-medium leading-[1.5] tracking-[-0.5px] text-[#060709] sm:text-[24px]">
-            Showing {resultCount} results
+            Showing {filtered.length} results
           </h1>
           <div className="flex items-center gap-2">
             <button
@@ -166,11 +194,22 @@ export function CategoryPage() {
         {filtered.length === 0 ? (
           <EmptyState title="No lots found" body="Try clearing filters or choosing another category." />
         ) : (
-          <div className="grid grid-cols-1 items-stretch gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filtered.map((lot, i) => (
-              <LotCard key={`${lot.id}-${i}`} lot={lot} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 items-stretch gap-x-8 gap-y-10 sm:grid-cols-2 xl:grid-cols-3">
+              {paged.map((lot) => (
+                <LotCard key={lot.id} lot={lot} />
+              ))}
+            </div>
+            <div className="mt-10">
+              <Pagination
+                page={pageSafe}
+                pageCount={pageCount}
+                pageSize={PAGE_SIZE}
+                total={filtered.length}
+                onPage={goToPage}
+              />
+            </div>
+          </>
         )}
       </div>
     </div>

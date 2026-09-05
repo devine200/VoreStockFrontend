@@ -9,12 +9,6 @@ import { setSearchQuery } from '@/store/slices/auctionsSlice'
 import { toggleAccountMenu } from '@/store/slices/uiSlice'
 import { cn, lotDisplayCode } from '@/utils/format'
 
-const TRUST_ITEMS = [
-  { icon: icons.truck, label: 'Reliable Shipping' },
-  { icon: icons.safeHome, label: 'You’re Safe With Us' },
-  { icon: icons.coin, label: 'Best Quality & Pricing' },
-] as const
-
 function MenuIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden>
@@ -50,8 +44,6 @@ export function SiteHeader() {
   const isDetail = Boolean(lotParam)
   const isBids = location.pathname === '/bids'
   const showSeoHeader = isDetail || isBids
-  // Match category/home chrome: promo + search + nav + trust strip on all body-only pages
-  const showTrust = !isDetail
 
   useEffect(() => {
     const id = window.setInterval(() => setPromoLeft((v) => Math.max(0, v - 1)), 1000)
@@ -174,34 +166,12 @@ export function SiteHeader() {
           <Link
             key={cat.slug}
             to={categoryTo(cat.slug)}
-            className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap text-[16px] font-normal leading-[1.5] text-[#46494f]"
+            className="inline-flex shrink-0 items-center whitespace-nowrap text-[16px] font-normal leading-[1.5] text-[#46494f]"
           >
             {cat.name}
-            {cat.dropdown ? <Icon src={icons.arrowDown} size={12} /> : null}
           </Link>
         ))}
       </nav>
-
-      {showTrust ? (
-        <div className="grid w-full grid-cols-1 gap-4 bg-[#dacdd0] px-4 py-5 sm:grid-cols-3 sm:items-center sm:gap-0 sm:px-8 sm:py-0 sm:h-24 lg:px-16">
-          {TRUST_ITEMS.map((item, i) => (
-            <div key={item.label} className="relative flex items-center gap-3 sm:gap-4">
-              {i > 0 ? (
-                <div
-                  className="absolute -left-4 top-1/2 hidden h-10 w-px -translate-y-1/2 bg-[#6d3745]/40 sm:block"
-                  aria-hidden
-                />
-              ) : null}
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white sm:size-12">
-                <Icon src={item.icon} size={26} />
-              </div>
-              <p className="text-[16px] font-medium leading-[1.5] text-[#1a1e26] sm:text-[18px] lg:text-[20px] lg:whitespace-nowrap">
-                {item.label}
-              </p>
-            </div>
-          ))}
-        </div>
-      ) : null}
 
       {showSeoHeader ? (
         <div className="flex min-h-[37px] w-full flex-col gap-1 border-b border-[#f4f4f4] px-4 py-2 text-[12px] leading-4 text-[#46494f] sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-20">
@@ -264,10 +234,9 @@ export function SiteHeader() {
                 <Link
                   key={cat.slug}
                   to={categoryTo(cat.slug)}
-                  className="flex items-center justify-between rounded-xl px-3 py-3 text-[15px] text-[#1a1e26] hover:bg-[#f9f5f6]"
+                  className="flex items-center rounded-xl px-3 py-3 text-[15px] text-[#1a1e26] hover:bg-[#f9f5f6]"
                 >
                   {cat.name}
-                  {cat.dropdown ? <Icon src={icons.arrowDown} size={12} /> : null}
                 </Link>
               ))}
             </nav>

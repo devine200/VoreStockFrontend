@@ -20,8 +20,9 @@ export function AppLayout() {
       {/* Home keeps Figma CTA→footer overlap; other pages get visible white chrome */}
       <main
         className={cn(
-          'mx-auto w-full max-w-[1440px] px-4 sm:px-6 md:px-10 lg:px-20',
-          isHome ? 'pt-6 pb-0 sm:pt-10' : 'pt-6 pb-12 sm:pt-10 sm:pb-20',
+          isHome
+            ? 'w-full pt-0 pb-0'
+            : 'mx-auto w-full max-w-[1440px] px-4 pt-6 pb-12 sm:px-6 sm:pt-10 sm:pb-20 md:px-10 lg:px-20',
         )}
       >
         <Outlet />

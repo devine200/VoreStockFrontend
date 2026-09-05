@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
 import type { Lot } from '@/types'
 import { LotCard } from '@/components/auction/LotCard'
+import { LandingHero } from '@/components/auction/LandingHero'
+import { LandingValueSections } from '@/components/auction/LandingValueSections'
+import { LandingBuyingApproaches } from '@/components/auction/LandingBuyingApproaches'
 import { FeaturedBanner } from '@/components/auction/FeaturedBanner'
 import { ProductCarousel } from '@/components/shared/ProductCarousel'
 import { icons } from '@/assets'
@@ -8,8 +11,6 @@ import { Icon } from '@/components/shared/Icon'
 import { useAppSelector } from '@/store/hooks'
 import cardPattern from '@/assets/images/card-pattern.svg'
 import lotGummies from '@/assets/images/lot-gummies.png'
-import arrowLeft from '@/assets/icons/arrow-left.svg'
-import arrowRight from '@/assets/icons/arrow-right.svg'
 
 const CATEGORY_TILES = [
   { label: 'FLOWER', slug: 'flower' },
@@ -26,9 +27,9 @@ function SortButton() {
   return (
     <button
       type="button"
-      className="inline-flex h-11 items-center gap-3 rounded-full border border-solid border-[#f4f4f4] bg-white px-5 text-[14px] font-normal leading-[1.5] text-[#1a1e26]"
+      className="inline-flex justify-between h-11 items-center gap-3 rounded-full border border-solid border-[#f4f4f4] bg-white px-5 text-[14px] font-normal leading-[1.5] text-[#1a1e26]"
     >
-      Short By Lates
+      <span>Sort By Latest</span>
       <Icon src={icons.arrowDown} size={14} />
     </button>
   )
@@ -106,7 +107,9 @@ export function HomePage() {
   const rec2 = lots.slice(2, 5)
 
   return (
-    <div className="flex w-full flex-col gap-14">
+    <div className="flex w-full flex-col">
+      <LandingHero />
+      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-14 px-4 pt-8 sm:px-6 sm:pt-10 md:px-10 lg:px-20">
       <TopProductsPanel lots={top} />
       <RecommendedPanel lots={rec1} />
       <RecommendedPanel lots={rec2} />
@@ -130,46 +133,14 @@ export function HomePage() {
         </ProductCarousel>
       </section>
 
-      <div className="flex flex-col gap-12">
-        <FeaturedBanner lots={lots} />
-
-        <div className="flex flex-col gap-3 sm:h-[60px] sm:flex-row sm:items-end sm:justify-between">
-          <p className="text-[14px] font-normal leading-[1.5] text-[#46494f]">Showing 1-30 of 393 results</p>
-          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none sm:gap-3">
-            <button
-              type="button"
-              className="flex size-9 items-center justify-center rounded-full border border-[#f4f4f4]"
-              aria-label="Prev page"
-            >
-              <Icon src={arrowLeft} size={18} />
-            </button>
-            {[1, 2, 3, 4].map((n) => (
-              <button
-                key={n}
-                type="button"
-                className={`flex size-9 items-center justify-center rounded-full text-[14px] ${
-                  n === 1 ? 'bg-[#480516] text-white' : 'text-[#46494f]'
-                }`}
-              >
-                {n}
-              </button>
-            ))}
-            <span className="px-1 text-[#46494f]">...</span>
-            <button type="button" className="flex size-9 items-center justify-center rounded-full text-[14px] text-[#46494f]">
-              55
-            </button>
-            <button
-              type="button"
-              className="flex size-9 items-center justify-center rounded-full border border-[#f4f4f4]"
-              aria-label="Next page"
-            >
-              <Icon src={arrowRight} size={18} />
-            </button>
-          </div>
-        </div>
+      <FeaturedBanner lots={lots} />
       </div>
 
-      <section className="relative z-10 mb-[-80px] w-full max-w-[1200px] self-center rounded-2xl bg-[#dacdd0] px-5 py-10 sm:mb-[-100px] sm:px-10 sm:py-12 lg:mb-[-120px] lg:px-16 lg:py-16">
+      <LandingValueSections />
+      <LandingBuyingApproaches />
+
+      <div className="mx-auto flex w-full max-w-[1440px] flex-col px-4 sm:px-6 md:px-10 lg:px-20">
+      <section className="relative z-10 mb-[-80px] w-full min-w-0 max-w-[1200px] self-center rounded-2xl bg-[#dacdd0] px-5 py-10 sm:mb-[-100px] sm:px-10 sm:py-12 lg:mb-[-120px] lg:px-16 lg:py-16">
         <h2 className="max-w-[789px] text-[32px] font-semibold leading-[1.1] tracking-[-1px] text-[#060709] sm:text-[44px] sm:tracking-[-2px] lg:text-[64px] lg:tracking-[-4px]">
           UNLOCK 20% OFF YOUR FIRST BID
         </h2>
@@ -177,20 +148,21 @@ export function HomePage() {
           Reveal coupon code by entering your email
         </p>
         <div className="mt-6 h-px w-full max-w-[1072px] bg-[#1a1e26]/15 sm:mt-8" />
-        <div className="mt-6 flex max-w-[1072px] flex-col gap-3 sm:mt-8 sm:flex-row sm:gap-8">
+        <div className="mt-6 flex w-full max-w-[1072px] flex-col gap-3 sm:mt-8 sm:flex-row sm:items-center sm:gap-8">
           <input
             type="email"
             placeholder="Email Address"
-            className="h-14 w-full flex-1 rounded-full border-0 bg-white px-6 text-[16px] text-[#1a1e26] outline-none placeholder:text-[#9d9ea2] sm:h-[72px] sm:px-11"
+            className="h-14 w-full min-w-0 max-w-full shrink-0 appearance-none rounded-full border-0 bg-white px-5 text-[16px] leading-normal text-[#1a1e26] outline-none placeholder:text-[#9d9ea2] sm:h-[72px] sm:min-w-0 sm:flex-1 sm:px-11"
           />
           <button
             type="button"
-            className="h-14 w-full shrink-0 rounded-full bg-[#480516] text-[16px] font-medium text-white sm:h-[72px] sm:w-[205px]"
+            className="h-14 w-full shrink-0 rounded-full bg-[#480516] text-[16px] font-medium text-white sm:h-[72px] sm:w-[205px] sm:max-w-[205px]"
           >
             Reveal coupon
           </button>
         </div>
       </section>
+      </div>
     </div>
   )
 }
