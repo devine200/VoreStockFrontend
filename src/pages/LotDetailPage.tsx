@@ -828,7 +828,7 @@ export function LotDetailPage() {
             <Icon src={icons.arrowDown} size={14} />
           </button>
         </div>
-        <ProductCarousel visible={3} gap={32}>
+        <ProductCarousel visible={4} gap={20}>
           {lots
             .filter((l) => l.id !== lot.id)
             .concat(lots)

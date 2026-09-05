@@ -24,5 +24,5 @@ export function useCarouselVisible(desktop: number) {
   if (isXl) return desktop
   if (isLg) return Math.min(desktop, 3)
   if (isSm) return Math.min(desktop, 2)
-  return 1
+  return Math.min(desktop, 1)
 }

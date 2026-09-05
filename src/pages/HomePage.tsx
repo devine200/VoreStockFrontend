@@ -60,7 +60,7 @@ function TopProductsPanel({ lots }: { lots: Lot[] }) {
   return (
     <section className="relative w-full overflow-visible rounded-2xl bg-[#dacdd0] px-4 py-5 sm:px-8 sm:py-6">
       <PanelHeader title="Top Products" action={<SortButton />} />
-      <ProductCarousel visible={3} gap={32}>
+      <ProductCarousel visible={4} gap={20}>
         {slides.map((lot, i) => (
           <LotCard key={`top-${lot.id}-${i}`} lot={lot} />
         ))}
@@ -74,7 +74,7 @@ function RecommendedPanel({ lots }: { lots: Lot[] }) {
   return (
     <section className="relative w-full overflow-visible py-6">
       <PanelHeader title="Recommended" action={<SortButton />} />
-      <ProductCarousel visible={3} gap={32}>
+      <ProductCarousel visible={4} gap={20}>
         {slides.map((lot, i) => (
           <LotCard key={`rec-${lot.id}-${i}`} lot={lot} />
         ))}
