@@ -628,6 +628,7 @@ const adminSlice = createSlice({
           stageIndex: number
           tplStatus: string
           phonecheck: string
+          imei: string
           canAdvanceLogistics: boolean
           deliveredBanner: string
           buyerConfirmed: string
