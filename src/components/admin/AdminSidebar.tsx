@@ -87,7 +87,7 @@ const SECTIONS: NavSection[] = [
     label: 'COMMERCE',
     items: [
       { to: '/admin/auctions', label: 'Auctions', icon: adminIcons.navAuctions },
-      { to: '/admin/lots', label: 'Lots', glyph: 'lots' },
+      { to: '/admin/lots', label: 'Products & lots', glyph: 'lots' },
       { to: '/admin/orders', label: 'Orders', icon: adminIcons.navOrders },
       { to: '/admin/shipments', label: 'Shipments', icon: adminIcons.navShipments },
     ],
@@ -145,7 +145,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
         {onNavigate ? (
           <button
             type="button"
-            className="flex size-8 shrink-0 items-center justify-center rounded-lg text-maroon-200 hover:bg-white/5 lg:hidden"
+            className="flex size-9 shrink-0 items-center justify-center rounded-lg text-maroon-200 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon-300 lg:hidden"
             aria-label="Close navigation"
             onClick={onNavigate}
           >

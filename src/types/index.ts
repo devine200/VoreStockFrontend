@@ -38,6 +38,9 @@ export interface User {
   kycStatus: 'verified' | 'pending' | 'unverified'
   kybStatus: 'verified' | 'pending' | 'unverified'
   avatarInitials: string
+  authProvider?: 'email' | 'google'
+  /** Referral code captured at registration, when the buyer entered one. */
+  referredBy?: string
 }
 
 export interface Lot {
@@ -108,6 +111,7 @@ export interface Order {
   checkpointDone?: number
   checkpointTotal?: number
   steps: OrderStep[]
+  imei?: string
 }
 
 export interface WalletTx {
@@ -147,6 +151,7 @@ export interface DisputeEvent {
   title: string
   at: string
   body: string
+  attachments?: string[]
 }
 
 export type DisputeStatus = 'under_review' | 'awaiting_response' | 'resolved' | 'open' | 'closed'
@@ -207,6 +212,7 @@ export interface TicketMessage {
   from: 'you' | 'agent'
   body: string
   at: string
+  attachments?: string[]
 }
 
 export interface SupportTicket {

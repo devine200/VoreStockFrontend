@@ -1,4 +1,5 @@
-import { Outlet, useLocation } from 'react-router-dom'
+import { useLayoutEffect } from 'react'
+import { Link, Outlet, useLocation } from 'react-router-dom'
 import { SiteHeader } from '@/components/shared/SiteHeader'
 import { SeoHead } from '@/components/shared/SeoHead'
 import { SiteFooter } from '@/components/shared/SiteFooter'
@@ -8,6 +9,32 @@ import { OnboardingHost } from '@/components/onboarding/OnboardingHost'
 import { QuickViewDrawer } from '@/components/auction/QuickViewDrawer'
 import logoWhite from '@/assets/images/logo-white.png'
 import { cn } from '@/utils/format'
+
+function scrollDocumentToTop() {
+  const opts: ScrollToOptions = { top: 0, left: 0, behavior: 'instant' }
+  window.scrollTo(opts)
+  document.documentElement.scrollTo(opts)
+  document.body.scrollTo(opts)
+  document.getElementById('admin-main')?.scrollTo(opts)
+}
+
+/** Resets scroll on every path change so SPA navigations land at the top of the new page. */
+export function RootLayout() {
+  const { pathname, hash } = useLocation()
+
+  useLayoutEffect(() => {
+    if (hash) {
+      const target = document.getElementById(decodeURIComponent(hash.slice(1)))
+      if (target) {
+        target.scrollIntoView()
+        return
+      }
+    }
+    scrollDocumentToTop()
+  }, [pathname, hash])
+
+  return <Outlet />
+}
 
 export function AppLayout() {
   const { pathname } = useLocation()
@@ -45,13 +72,13 @@ export function AuthLayout() {
         <div className="pointer-events-none absolute left-[54px] top-[-67px] size-48 rounded-full bg-[#dacdd0] opacity-[0.04]" />
         <div className="pointer-events-none absolute left-[142px] top-[86px] hidden size-48 rounded-full bg-[#dacdd0] opacity-[0.04] lg:block" />
 
-        <div className="relative h-[60px] w-[88px] shrink-0 overflow-hidden">
+        <Link to="/" className="relative block h-[60px] w-[88px] shrink-0 overflow-hidden" aria-label="VSK Global home">
           <img
             src={logoWhite}
-            alt="VSK Global"
+            alt=""
             className="pointer-events-none absolute inset-0 size-full max-w-none object-cover"
           />
-        </div>
+        </Link>
 
         <div className="relative mt-8 max-w-[384px] lg:mt-0">
           <h1 className="text-[24px] font-semibold leading-[1.25] tracking-tight text-white sm:text-[30px] sm:leading-[37.5px]">

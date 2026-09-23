@@ -7,13 +7,10 @@ import { closeModal, showSuccess } from '@/store/slices/uiSlice'
 import { settleWonBid } from '@/store/slices/bidsSlice'
 import { holdEscrow } from '@/store/slices/walletSlice'
 import { addOrderFromWin } from '@/store/slices/accountSlices'
+import { applyFreightCredit } from '@/store/slices/referralsSlice'
 import { formatMoney } from '@/utils/format'
 import { useCountdown } from '@/hooks/useCountdown'
-
-function lotCode(lotId: string) {
-  const n = Number(lotId.replace(/\D/g, '')) || 0
-  return `LOT-${4700 + n}`
-}
+import modalClose from '@/assets/icons/modal-close.svg'
 
 function breakdown(finalBid: number) {
   const freight = Math.round(finalBid * 0.15)
@@ -26,10 +23,21 @@ function breakdown(finalBid: number) {
   return { finalBid, freight, duty, vat, fee, landed, deposit, due }
 }
 
+function Line({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-start justify-between gap-4">
+      <span className="text-[11px] leading-[16.5px] text-[#46494f]">{label}</span>
+      <span className="text-[12px] font-medium leading-4 tabular-nums text-[#46494f]">{value}</span>
+    </div>
+  )
+}
+
 export function SettleBalanceModal() {
   const dispatch = useAppDispatch()
   const payload = useAppSelector((s) => s.ui.modalPayload)
+  const freightCredits = useAppSelector((s) => s.referrals.available)
   const [confirmed, setConfirmed] = useState(false)
+  const [applyBonus, setApplyBonus] = useState(false)
 
   const bidId = String(payload?.bidId ?? '')
   const lotId = String(payload?.lotId ?? '')
@@ -38,101 +46,125 @@ export function SettleBalanceModal() {
   const lot = getLot(lotId)
   const due = useCountdown(settlementDueAt)
   const lines = useMemo(() => breakdown(amount), [amount])
+  const freightBonus = applyBonus ? Math.min(freightCredits, lines.freight, lines.due) : 0
+  const amountDue = lines.due - freightBonus
 
   const dueLabel = due.expired
     ? 'Past due'
     : `${due.days * 24 + due.hours}h : ${String(due.minutes).padStart(2, '0')}m : ${String(due.seconds).padStart(2, '0')}s`
 
-  const rows: { label: string; value: string; muted?: boolean }[] = [
-    { label: 'Final Bid', value: formatMoney(lines.finalBid) },
-    { label: 'Freight & Logistics', value: formatMoney(lines.freight) },
-    { label: 'Import Duty', value: formatMoney(lines.duty) },
-    { label: 'VAT', value: formatMoney(lines.vat) },
-    { label: 'Platform fee', value: formatMoney(lines.fee) },
-  ]
-
   return (
     <Modal
-      title="Settle Balance"
-      wide
-      footer={
-        <div className="grid w-full grid-cols-2 gap-3">
-          <Button variant="secondary" onClick={() => dispatch(closeModal())}>
+      chrome="none"
+      onClose={() => dispatch(closeModal())}
+    >
+      <div className="overflow-hidden rounded-[24px] border border-[#ebebec] bg-white shadow-[0px_24px_64px_rgba(0,0,0,0.2)]">
+        <div className="flex items-center justify-between border-b border-[#ebebec] px-6 py-4">
+          <h2 className="text-[14px] font-semibold leading-5 text-[#1a1e26]">Settle Balance</h2>
+          <button
+            type="button"
+            aria-label="Close"
+            onClick={() => dispatch(closeModal())}
+            className="flex size-7 items-center justify-center rounded-full hover:bg-[#f5f5f6]"
+          >
+            <img src={modalClose} alt="" width={14} height={14} />
+          </button>
+        </div>
+
+        <div className="space-y-4 px-6 py-5">
+          {lot ? (
+            <div className="flex gap-3 rounded-2xl border border-[#ebebec] bg-[#f5f5f6] p-3.5">
+              <img src={lot.image} alt="" className="size-12 shrink-0 rounded-xl object-cover" />
+              <div className="min-w-0">
+                <p className="line-clamp-2 text-[12px] font-semibold leading-[16.5px] text-[#1a1e26]">{lot.title}</p>
+                <p className="mt-0.5 text-[10px] leading-[15px] text-[#7a7b7c]">
+                  Current bid: US{formatMoney(amount)}
+                </p>
+              </div>
+            </div>
+          ) : null}
+
+          <div className="rounded-xl bg-[#ffe0de] px-4 py-4 text-[14px] font-semibold leading-[16.5px] text-[#ea4335]">
+            Settlement Due in {dueLabel}
+          </div>
+
+          <div className="space-y-2 border-b border-[#ebebec] pb-4">
+            <Line label="Final Bid" value={formatMoney(lines.finalBid)} />
+            <Line label="Freight & Logistics" value={formatMoney(lines.freight)} />
+            <Line label="Import Duty" value={formatMoney(lines.duty)} />
+            <Line label="VAT" value={formatMoney(lines.vat)} />
+            <Line label="Platform fee" value={formatMoney(lines.fee)} />
+          </div>
+
+          <div className="space-y-2 border-b border-[#ebebec] pb-4">
+            <Line label="Landed Total" value={formatMoney(lines.landed)} />
+            <Line label="Deposit already held" value={`-${formatMoney(lines.deposit)}`} />
+            {freightBonus > 0 ? (
+              <Line label="Freight bonus" value={`-${formatMoney(freightBonus)}`} />
+            ) : null}
+          </div>
+
+          <Line label="Amount Due Now" value={formatMoney(amountDue)} />
+
+          {freightCredits > 0 ? (
+            <label className="flex cursor-pointer items-start gap-2.5">
+              <input
+                type="checkbox"
+                checked={applyBonus}
+                onChange={(e) => setApplyBonus(e.target.checked)}
+                className="mt-0.5 size-4 rounded-full border-[#d1d5db] accent-[#480516]"
+              />
+              <span className="text-[11px] leading-[17.875px] text-[#9d9ea2]">
+                Apply freight bonus ({formatMoney(Math.min(freightCredits, lines.freight))} available)
+              </span>
+            </label>
+          ) : null}
+
+          <label className="flex cursor-pointer items-start gap-2.5">
+            <input
+              type="checkbox"
+              checked={confirmed}
+              onChange={(e) => setConfirmed(e.target.checked)}
+              className="mt-0.5 size-4 rounded-full border-[#d1d5db] accent-[#480516]"
+            />
+            <span className="text-[11px] leading-[17.875px] text-[#9d9ea2]">
+              I confirm that the landed cost break down and agree funds are released to the seller after delivery
+            </span>
+          </label>
+        </div>
+
+        <div className="flex gap-3 border-t border-[#ebebec] px-6 py-4">
+          <Button
+            variant="secondary"
+            className="h-[47px] flex-1 rounded-xl text-[14px] font-medium"
+            onClick={() => dispatch(closeModal())}
+          >
             Cancel
           </Button>
           <Button
             disabled={!confirmed}
+            className="h-[47px] flex-1 rounded-xl text-[14px] font-semibold"
             onClick={() => {
               const orderId = `ORD-${8800 + Math.floor(Math.random() * 90)}`
+              if (freightBonus > 0) dispatch(applyFreightCredit({ amount: freightBonus }))
               dispatch(settleWonBid(bidId))
               dispatch(holdEscrow({ amount: lines.deposit, label: `Escrow · ${lot?.title ?? lotId}` }))
-              dispatch(addOrderFromWin({ lotId, amount: lines.due }))
+              dispatch(addOrderFromWin({ lotId, amount: amountDue }))
+              const bonusNote =
+                freightBonus > 0 ? ` A freight bonus of ${formatMoney(freightBonus)} was applied.` : ''
               dispatch(
                 showSuccess({
                   title: 'Balance Settled',
-                  body: `${formatMoney(lines.due)} moved to escrow for ${lot ? lotCode(lot.id) : lotCode(lotId)}. Order ${orderId} created and the seller has been notified to release goods.`,
+                  body: `${formatMoney(amountDue)} moved to escrow for ${lot?.title ?? lotId}. Order ${orderId} created and the seller has been notified to release goods.${bonusNote}`,
                   actionLabel: 'View Order',
                   actionTo: '/orders',
                 }),
               )
             }}
           >
-            Pay {formatMoney(lines.due)}
+            Pay {formatMoney(amountDue)}
           </Button>
         </div>
-      }
-    >
-      <div className="-mx-1 space-y-4 text-[#1a1e26]">
-        {lot ? (
-          <div className="flex gap-3 rounded-xl bg-[#f5f5f6] p-3">
-            <img src={lot.image} alt="" className="h-14 w-14 rounded-lg object-cover" />
-            <div className="min-w-0">
-              <p className="text-[14px] font-semibold leading-snug text-[#1a1e26]">{lot.title}</p>
-              <p className="mt-1 text-[13px] text-[#7a7b7c]">Current bid: {formatMoney(lot.currentBid)}</p>
-            </div>
-          </div>
-        ) : null}
-
-        <div className="rounded-xl bg-[#fdebec] px-4 py-3 text-center text-[14px] font-semibold text-[#c62828]">
-          Settlement Due in {dueLabel}
-        </div>
-
-        <div className="space-y-2.5 text-[14px]">
-          {rows.map((row) => (
-            <div key={row.label} className="flex items-center justify-between gap-4">
-              <span className="text-[#4b5563]">{row.label}</span>
-              <span className="font-medium tabular-nums text-[#1a1e26]">{row.value}</span>
-            </div>
-          ))}
-          <div className="border-t border-[#ebebec] pt-2.5">
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-[#4b5563]">Landed Total</span>
-              <span className="font-semibold tabular-nums">{formatMoney(lines.landed)}</span>
-            </div>
-            <div className="mt-2 flex items-center justify-between gap-4">
-              <span className="text-[#4b5563]">Deposit already held</span>
-              <span className="font-medium tabular-nums">-{formatMoney(lines.deposit)}</span>
-            </div>
-          </div>
-          <div className="flex items-center justify-between gap-4 border-t border-[#ebebec] pt-2.5">
-            <span className="font-semibold text-[#1a1e26]">Amount Due Now</span>
-            <span className="text-[16px] font-semibold tabular-nums text-[#1a1e26]">
-              {formatMoney(lines.due)}
-            </span>
-          </div>
-        </div>
-
-        <label className="flex cursor-pointer items-start gap-2.5 pt-1">
-          <input
-            type="checkbox"
-            checked={confirmed}
-            onChange={(e) => setConfirmed(e.target.checked)}
-            className="mt-0.5 h-4 w-4 rounded border-[#d1d5db] accent-[#480516]"
-          />
-          <span className="text-[12px] leading-snug text-[#9ca3af]">
-            I confirm that the landed cost break down and agree funds are released to the seller after delivery
-          </span>
-        </label>
       </div>
     </Modal>
   )

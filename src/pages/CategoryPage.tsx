@@ -62,6 +62,7 @@ export function CategoryPage() {
   const page = Number.isFinite(pageFromUrl) && pageFromUrl > 0 ? Math.floor(pageFromUrl) : 1
 
   const [filters, setFilters] = useState<CategoryFilterState>(DEFAULT_CATEGORY_FILTERS)
+  const [appliedMin, setAppliedMin] = useState(DEFAULT_CATEGORY_FILTERS.minPrice)
   const [appliedMax, setAppliedMax] = useState(DEFAULT_CATEGORY_FILTERS.maxPrice)
   const [filtersOpen, setFiltersOpen] = useState(false)
   const listTopRef = useRef<HTMLDivElement>(null)
@@ -100,7 +101,7 @@ export function CategoryPage() {
 
     const list = lots.filter((lot) => {
       const catOk = effectiveSlug === 'all' || lot.categorySlug === effectiveSlug
-      const priceOk = lot.currentBid <= appliedMax
+      const priceOk = lot.currentBid >= appliedMin && lot.currentBid <= appliedMax
       const qOk =
         !query ||
         lot.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -110,7 +111,7 @@ export function CategoryPage() {
     })
 
     return sortLots(list, filters.condition)
-  }, [lots, slug, query, filters.category, filters.condition, appliedMax])
+  }, [lots, slug, query, filters.category, filters.condition, appliedMin, appliedMax])
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const pageSafe = Math.min(page, pageCount)
@@ -128,12 +129,14 @@ export function CategoryPage() {
         setFilters(next)
         resetToFirstPage()
       }}
-      onApplyPrice={(maxPrice) => {
+      onApplyPrice={({ minPrice, maxPrice }) => {
+        setAppliedMin(minPrice)
         setAppliedMax(maxPrice)
         resetToFirstPage()
       }}
       onClear={() => {
         setFilters(DEFAULT_CATEGORY_FILTERS)
+        setAppliedMin(DEFAULT_CATEGORY_FILTERS.minPrice)
         setAppliedMax(DEFAULT_CATEGORY_FILTERS.maxPrice)
         resetToFirstPage()
       }}

@@ -74,8 +74,19 @@ export function FeaturedBanner({ lots }: { lots: Lot[] }) {
   }
 
   return (
-    <section className="relative w-full overflow-visible rounded-2xl bg-[#480516] px-5 py-8 text-white sm:px-10 sm:py-12 lg:px-14 lg:py-14">
-      <div className="flex flex-col-reverse items-center gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
+    <section className="relative w-full overflow-visible rounded-[24px] px-5 py-8 text-white sm:px-10 sm:py-12 lg:px-14 lg:py-14">
+      {/* Figma 370:40389 Panel fill + 370:40390 Row overlay */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[24px]" aria-hidden>
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              'conic-gradient(from 90deg in srgb, rgb(95, 36, 51) 0%, rgb(84, 21, 37) 40.889%, rgb(72, 5, 22) 83.077%, rgb(84, 21, 37) 90.889%, rgb(95, 36, 51) 98.702%)',
+          }}
+        />
+        <div className="absolute inset-0 bg-[rgba(5,66,44,0.2)] backdrop-blur-[20px]" />
+      </div>
+      <div className="relative flex flex-col-reverse items-center gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
         <div className="relative min-h-0 w-full max-w-[341px] overflow-hidden lg:min-h-[303px]">
           <div
             className="flex transition-transform duration-300 ease-out"
@@ -100,7 +111,7 @@ export function FeaturedBanner({ lots }: { lots: Lot[] }) {
                 <div className="mt-6 flex flex-wrap items-center gap-4 sm:mt-8 sm:gap-8">
                   <Link
                     to={`/lots/${s.slug}`}
-                    className="inline-flex h-12 w-[106px] items-center justify-center rounded-full bg-[#2e030e] text-[16px] font-medium text-white sm:h-14"
+                    className="inline-flex h-12 w-[106px] items-center justify-center rounded-full bg-[#480516] text-[16px] font-medium text-white sm:h-14"
                   >
                     Bid
                   </Link>
@@ -115,7 +126,7 @@ export function FeaturedBanner({ lots }: { lots: Lot[] }) {
         </div>
 
         <div className="relative w-full max-w-[373px] shrink-0">
-          <div className="relative flex h-[240px] w-full items-center justify-center overflow-hidden rounded-2xl bg-[#5c1a2a] sm:h-[322px]">
+          <div className="relative flex h-[240px] w-full items-center justify-center overflow-hidden rounded-2xl bg-white/[0.12] sm:h-[322px]">
             <div
               className="flex h-full w-full transition-transform duration-300 ease-out"
               style={{ transform: `translateX(-${index * 100}%)` }}

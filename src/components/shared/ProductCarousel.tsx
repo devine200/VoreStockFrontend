@@ -156,11 +156,38 @@ export function ProductCarousel({
     drag.current.moved = false
   }
 
+  const arrowClass =
+    'z-10 flex shrink-0 items-center justify-center rounded-full bg-white shadow-[0px_6px_8px_rgba(0,0,0,0.12)] transition disabled:cursor-default disabled:opacity-40'
+
   return (
-    <div className={cn('relative', className)}>
+    <div
+      className={cn(
+        'relative flex items-center',
+        compactArrows ? 'gap-1 sm:gap-2' : '',
+        className,
+      )}
+    >
+      <button
+        type="button"
+        disabled={index <= 0}
+        onClick={() => slideBy(-1)}
+        className={cn(
+          arrowClass,
+          compactArrows
+            ? 'relative size-8 sm:size-10'
+            : 'absolute top-1/2 left-0 size-10 -translate-y-1/2 -translate-x-[calc(100%+12px)]',
+        )}
+        aria-label="Previous"
+      >
+        <Icon src={arrowLeft} size={compactArrows ? 16 : 20} />
+      </button>
+
       <div
         ref={scrollerRef}
-        className="-mx-1 flex cursor-grab snap-x snap-mandatory overflow-x-auto overflow-y-hidden px-1 py-3 select-none scrollbar-none overscroll-x-contain"
+        className={cn(
+          'flex min-w-0 flex-1 cursor-grab snap-x snap-mandatory overflow-x-auto overflow-y-hidden py-3 select-none scrollbar-none overscroll-x-contain',
+          !compactArrows && '-mx-1 px-1',
+        )}
         style={{ gap: `${gap}px` }}
         onScroll={syncIndex}
         onPointerDown={onPointerDown}
@@ -184,27 +211,17 @@ export function ProductCarousel({
 
       <button
         type="button"
-        disabled={index <= 0}
-        onClick={() => slideBy(-1)}
-        className={cn(
-          'absolute top-1/2 z-10 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-[0px_6px_8px_rgba(0,0,0,0.12)] transition disabled:cursor-default disabled:opacity-40',
-          compactArrows ? 'left-2' : 'left-0 -translate-x-[calc(100%+12px)]',
-        )}
-        aria-label="Previous"
-      >
-        <Icon src={arrowLeft} size={20} />
-      </button>
-      <button
-        type="button"
         disabled={index >= maxIndex}
         onClick={() => slideBy(1)}
         className={cn(
-          'absolute top-1/2 z-10 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-[0px_6px_8px_rgba(0,0,0,0.12)] transition disabled:cursor-default disabled:opacity-40',
-          compactArrows ? 'right-2' : 'right-0 translate-x-[calc(100%+12px)]',
+          arrowClass,
+          compactArrows
+            ? 'relative size-8 sm:size-10'
+            : 'absolute top-1/2 right-0 size-10 -translate-y-1/2 translate-x-[calc(100%+12px)]',
         )}
         aria-label="Next"
       >
-        <Icon src={arrowRight} size={20} />
+        <Icon src={arrowRight} size={compactArrows ? 16 : 20} />
       </button>
     </div>
   )

@@ -7,12 +7,12 @@ export const REFERRAL_STATUS_LABEL: Record<ReferralStatus, string> = {
 }
 
 const TONE: Record<ReferralStatus, string> = {
-  reward_earned: 'bg-wine-50 text-wine-500',
+  reward_earned: 'bg-[#f9f5f6] text-[#480516]',
   pending_verification: 'bg-[#fef8e6] text-[#b45309]',
 }
 
 const DOT: Record<ReferralStatus, string> = {
-  reward_earned: 'bg-wine-500',
+  reward_earned: 'bg-[#480516]',
   pending_verification: 'bg-[#f2bc1b]',
 }
 

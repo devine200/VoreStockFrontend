@@ -7,6 +7,8 @@ import { Icon } from '@/components/shared/Icon'
 import { icons } from '@/assets'
 import heartIcon from '@/assets/icons/heart.svg'
 import arrowDown from '@/assets/icons/arrow-down.svg'
+import clockIcon from '@/assets/icons/clock.svg'
+import infoIcon from '@/assets/icons/info.svg'
 import { useCountdown } from '@/hooks/useCountdown'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { closeQuickView, showSuccess, showToast } from '@/store/slices/uiSlice'
@@ -207,100 +209,112 @@ export function QuickViewDrawer() {
         <div className="flex shrink-0 justify-center pt-2.5 md:hidden" aria-hidden>
           <span className="h-1 w-10 rounded-full bg-[#d7d7d9]" />
         </div>
-        <header className="flex shrink-0 items-start justify-between gap-3 border-b border-[#ebebec] px-4 pb-5 pt-3 sm:px-6 md:pt-5">
+        <header className="flex shrink-0 items-start justify-between gap-3 border-b border-[#ebebec] px-4 py-4 sm:items-center sm:px-6">
           <div className="min-w-0">
-            <div className="flex flex-wrap items-baseline gap-1.5">
-              <h2 className="text-[14px] font-semibold leading-[30px] text-[#1a1e26]">Manifest Summary</h2>
-              <span className="text-[12px] text-[#9d9ea2]">·</span>
-              <p className="text-[12px] leading-[15px] text-[#7a7b7c]">
-                Built from this lot&apos;s manifest — verify before bid
-              </p>
-            </div>
+            <h2 className="text-[10px] font-semibold uppercase leading-[15px] tracking-[0.7px] text-[#9d9ea2]">
+              Manifest Summary
+            </h2>
+            <p className="mt-0.5 text-[10px] leading-[15px] text-[#9d9ea2] sm:mt-0 sm:inline">
+              <span className="hidden text-[#c8c9cb] sm:inline"> · </span>
+              Built from this lot&apos;s manifest — verify before bidding.
+            </p>
           </div>
           <button
             type="button"
             onClick={close}
-            className="flex size-8 shrink-0 items-center justify-center rounded-lg text-[#7a7b7c] transition hover:bg-[#f5f5f6] hover:text-[#1a1e26]"
+            className="flex size-8 shrink-0 items-center justify-center rounded-full border border-[#ebebec] text-[#7a7b7c] transition hover:bg-[#f5f5f6]"
             aria-label="Close"
           >
             <Icon src={icons.close} size={16} />
           </button>
         </header>
 
-        <div className="mt-2 flex-1 overflow-y-auto px-4 pb-8 pt-6 sm:px-6 md:pt-8">
-          <div className="flex flex-wrap items-center gap-2 text-[12px] leading-[17px] text-[#7a7b7c]">
-            <span className="inline-flex h-[23px] items-center rounded bg-[#f9f5f6] px-2.5 text-[10px] font-semibold uppercase tracking-wide text-[#05422c]">
-              Auction
-            </span>
-            <span>·</span>
-            <span className="font-medium text-[#46494f]">{lotCode(lot)}</span>
-            <span>·</span>
-            <span className="inline-flex items-center gap-1">
-              <Icon src={icons.location} size={12} />
-              {lot.location}
-            </span>
-          </div>
-          <p className="mt-3 text-[12px] leading-[17px] text-[#7a7b7c]">{lot.brand ?? 'VSK Seller'}</p>
-          <h3 className="mt-2 text-[20px] font-semibold leading-[28px] tracking-tight text-[#1a1e26]">
-            {lot.title}
-          </h3>
-          <p className="mt-3 flex flex-wrap gap-x-2 gap-y-1 text-[12px] leading-[18px] text-[#7a7b7c]">
-            <span>2 pallets</span>
-            <span>·</span>
-            <span>{lot.units} units</span>
-            <span>·</span>
-            <span>{formatMoney(lot.msrp)} MSRP</span>
-            <span>·</span>
-            <span>{formatMoney(msrpPerUnit)}/unit</span>
-          </p>
-
-          <div className="mt-5 grid grid-cols-3 overflow-hidden rounded-xl border border-[#ebebec]">
-            {[
-              { label: 'Current Bid', value: formatMoney(lot.currentBid) },
-              { label: '% of MSRP', value: `${msrpPct}%` },
-              { label: 'Per Unit', value: formatMoney(perUnit) },
-            ].map((cell) => (
-              <div key={cell.label} className="border-r border-[#ebebec] px-4 py-3.5 last:border-r-0">
-                <p className="text-[11px] leading-[15px] text-[#7a7b7c]">{cell.label}</p>
-                <p className="mt-0.5 text-[16px] font-semibold leading-[23px] text-[#1a1e26]">{cell.value}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-4 flex items-center justify-between rounded-xl border border-[#ebebec] px-4 py-3">
-            <p className="flex flex-wrap items-center gap-1.5 text-[12px] leading-[18px] text-[#46494f]">
-              <span aria-hidden>⏱</span>
-              <span className="font-medium">{countdown.expired ? 'Ended' : `${countdown.label} left`}</span>
+        <div className="mt-2 flex-1 space-y-5 overflow-y-auto px-4 pb-6 pt-5 sm:px-6">
+          <div>
+            <div className="flex flex-wrap items-center gap-2 text-[11px] leading-[16.5px]">
+              <span className="inline-flex items-center rounded-full bg-[#dacdd0] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.25px] text-[#480516]">
+                Auction
+              </span>
               <span className="text-[#9d9ea2]">·</span>
-              <span className="text-[#7a7b7c]">Ends {formatEndDate(lot.endsAt)}</span>
+              <span className="font-medium text-[#9d9ea2]">{lotCode(lot)}</span>
+              <span className="text-[#9d9ea2]">·</span>
+              <span className="inline-flex items-center gap-1 text-[#7a7b7c]">
+                <Icon src={icons.location} size={12} />
+                {lot.location}
+              </span>
+            </div>
+            <p className="mt-3 text-[11px] font-semibold uppercase leading-[16.5px] tracking-[0.6px] text-[#480516]">
+              {lot.brand ?? 'VSK Seller'}
             </p>
-            <span
-              className={cn(
-                'inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[11px] font-semibold',
-                lot.status === 'live' && !countdown.expired
-                  ? 'bg-[#e6f4ed] text-[#0a6e38]'
-                  : 'bg-[#f5f5f6] text-[#7a7b7c]',
-              )}
-            >
+            <h3 className="mt-1.5 text-[18px] font-semibold leading-[24.75px] tracking-[-0.45px] text-[#1a1e26]">
+              {lot.title}
+            </h3>
+            <p className="mt-3 flex flex-wrap items-center gap-4 text-[12px] leading-[18px] text-[#7a7b7c]">
+              <span>2 pallets</span>
+              <span className="text-[11px] text-[#c8c9cb]">·</span>
+              <span>{lot.units} units</span>
+              <span className="text-[11px] text-[#c8c9cb]">·</span>
+              <span>{formatMoney(lot.msrp)} MSRP</span>
+              <span className="text-[11px] text-[#c8c9cb]">·</span>
+              <span>{formatMoney(msrpPerUnit)}/unit</span>
+            </p>
+          </div>
+
+          <div className="overflow-hidden rounded-xl border border-[#ebebec] bg-[#f9f9f9]">
+            <div className="grid grid-cols-3">
+              {[
+                { label: 'Current Bid', value: formatMoney(lot.currentBid), tone: 'text-[#f2bc1b]' },
+                { label: '% of MSRP', value: `${msrpPct}%`, tone: 'text-[#1a1e26]' },
+                { label: 'Per Unit', value: formatMoney(perUnit), tone: 'text-[#1a1e26]' },
+              ].map((cell) => (
+                <div key={cell.label} className="min-w-0 border-r border-[#ebebec] px-2.5 py-3.5 last:border-r-0 sm:px-4">
+                  <p className="text-[10px] font-light uppercase leading-[15px] tracking-[0.5px] text-[#9d9ea2]">
+                    {cell.label}
+                  </p>
+                  <p className={cn('mt-0.5 text-[15px] font-semibold leading-[22.5px] tracking-[-0.375px]', cell.tone)}>
+                    {cell.value}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center justify-between gap-3 border-t border-[#ebebec] px-4 py-2.5">
+              <p className="flex min-w-0 flex-wrap items-center gap-1.5 text-[12px] leading-[18px] text-[#7a7b7c]">
+                <Icon src={clockIcon} size={12} />
+                <span>{countdown.expired ? 'Ended' : `${countdown.label} left`}</span>
+                <span className="text-[#c8c9cb]">·</span>
+                <span className="text-[11px] leading-[16.5px] text-[#9d9ea2]">Ends {formatEndDate(lot.endsAt)}</span>
+              </p>
               <span
                 className={cn(
-                  'size-1.5 rounded-full',
-                  lot.status === 'live' && !countdown.expired ? 'bg-[#16a34a]' : 'bg-[#9d9ea2]',
+                  'inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold leading-[15px]',
+                  lot.status === 'live' && !countdown.expired
+                    ? 'bg-[#e8f7ef] text-[#0b6e41]'
+                    : 'bg-[#f5f5f6] text-[#7a7b7c]',
                 )}
-              />
-              {countdown.expired ? 'Ended' : 'Live'}
-            </span>
+              >
+                <span
+                  className={cn(
+                    'size-1.5 rounded-full',
+                    lot.status === 'live' && !countdown.expired ? 'bg-[#0b6e41]' : 'bg-[#9d9ea2]',
+                  )}
+                />
+                {countdown.expired ? 'Ended' : 'Live'}
+              </span>
+            </div>
           </div>
 
-          <div className="mt-4 overflow-hidden rounded-xl border border-[#ebebec]">
+          <div className="overflow-hidden rounded-xl border border-[#ebebec]">
             <button
               type="button"
               onClick={() => setCostOpen((v) => !v)}
-              className="flex w-full items-center justify-between px-4 py-4 text-left"
+              className="flex w-full items-center justify-between bg-white px-4 py-3.5 text-left"
             >
-              <span className="text-[14px] font-medium leading-5 text-[#1a1e26]">Total Landed Cost</span>
+              <span className="inline-flex items-center gap-2 text-[13px] font-semibold leading-[19.5px] text-[#46494f]">
+                Total Landed Cost
+                <Icon src={infoIcon} size={13} />
+              </span>
               <span className="flex items-center gap-2">
-                <span className="text-[18px] font-semibold leading-[27px] text-[#1a1e26]">
+                <span className="text-[18px] font-semibold leading-[27px] tracking-[-0.45px] text-[#1a1e26]">
                   {formatMoney(costs.total)}
                 </span>
                 <Icon
@@ -311,81 +325,95 @@ export function QuickViewDrawer() {
               </span>
             </button>
             {costOpen ? (
-              <div className="space-y-2 border-t border-[#ebebec] px-4 py-3.5 text-[12px] leading-[18px]">
-                <div className="flex justify-between text-[#7a7b7c]">
-                  <span>Current bid</span>
-                  <span>{formatMoney(lot.currentBid)}</span>
+              <div className="space-y-2 border-t border-[#ebebec] bg-[#fafafa] px-4 py-3 text-[12px] leading-[18px]">
+                <div className="flex justify-between">
+                  <span className="text-[#7a7b7c]">Current bid</span>
+                  <span className="font-medium text-[#1a1e26]">{formatMoney(lot.currentBid)}</span>
                 </div>
-                <div className="flex justify-between text-[#7a7b7c]">
-                  <span>Buyer&apos;s premium ({lot.buyerPremiumPct}%)</span>
-                  <span>{formatMoney(costs.premium)}</span>
+                <div className="flex justify-between">
+                  <span className="text-[#7a7b7c]">Buyer&apos;s premium ({lot.buyerPremiumPct}%)</span>
+                  <span className="font-medium text-[#1a1e26]">{formatMoney(costs.premium)}</span>
                 </div>
-                <div className="flex justify-between text-[#7a7b7c]">
-                  <span>Estimated freight</span>
-                  <span>{formatMoney(costs.freight)}</span>
+                <div className="flex justify-between">
+                  <span className="text-[#7a7b7c]">Estimated freight</span>
+                  <span className="font-medium text-[#1a1e26]">{formatMoney(costs.freight)}</span>
                 </div>
-                <div className="flex justify-between text-[#7a7b7c]">
-                  <span>Processing fee</span>
-                  <span>{formatMoney(costs.processing)}</span>
+                <div className="flex justify-between">
+                  <span className="text-[#7a7b7c]">Processing fee</span>
+                  <span className="font-medium text-[#1a1e26]">{formatMoney(costs.processing)}</span>
                 </div>
-                <div className="flex justify-between border-t border-[#ebebec] pt-2 text-[13px] font-semibold text-[#1a1e26]">
-                  <span>Total</span>
-                  <span>{formatMoney(costs.total)}</span>
+                <div className="flex justify-between border-t border-[#ebebec] pt-2">
+                  <span className="font-semibold text-[#1a1e26]">Total</span>
+                  <span className="text-[13px] font-semibold leading-[19.5px] text-[#480516]">
+                    {formatMoney(costs.total)}
+                  </span>
                 </div>
               </div>
             ) : null}
           </div>
 
-          <section className="mt-8">
-            <h4 className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#9d9ea2]">At a Glance</h4>
-            <ul className="mt-3 space-y-2.5">
+          <section>
+            <h4 className="text-[10px] font-semibold uppercase leading-[15px] tracking-[0.7px] text-[#9d9ea2]">
+              At a Glance
+            </h4>
+            <ul className="mt-3 space-y-2">
               {glanceItems(lot).map((item) => (
-                <li key={item} className="flex gap-2.5 text-[13px] leading-[20px] text-[#46494f]">
-                  <span className="mt-2 size-1 shrink-0 rounded-full bg-[#480516]" />
+                <li key={item} className="flex gap-2.5 text-[12px] leading-[19.5px] text-[#46494f]">
+                  <span className="mt-2 size-1 shrink-0 rounded-full bg-[#c8c9cb]" />
                   <span>{item}</span>
                 </li>
               ))}
             </ul>
           </section>
 
-          <section className="mt-8">
-            <h4 className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#9d9ea2]">
+          <section>
+            <h4 className="text-[10px] font-semibold uppercase leading-[15px] tracking-[0.7px] text-[#9d9ea2]">
               Top Retail Picks
             </h4>
-            <div className="mt-3 divide-y divide-[#ebebec] rounded-xl border border-[#ebebec]">
-              {retailPicks(lot).map((pick) => (
-                <div key={pick.title} className="flex gap-3 px-4 py-3.5">
+            <div className="mt-3 overflow-hidden rounded-xl border border-[#ebebec] px-4">
+              {retailPicks(lot).map((pick, index) => (
+                <div
+                  key={pick.title}
+                  className={cn(
+                    'flex gap-3 py-3.5',
+                    index < retailPicks(lot).length - 1 && 'border-b border-[#f4f4f4]',
+                  )}
+                >
                   <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-medium leading-[18px] text-[#1a1e26]">{pick.title}</p>
-                    <p className="mt-1 text-[12px] leading-[18px] text-[#7a7b7c]">{pick.detail}</p>
-                    <p className="mt-1 text-[11px] leading-[15px] text-[#9d9ea2]">{pick.note}</p>
+                    <p className="text-[13px] font-medium leading-[17.875px] text-[#1a1e26]">{pick.title}</p>
+                    <p className="mt-0.5 text-[11px] leading-[17.875px] text-[#7a7b7c]">{pick.detail}</p>
+                    <p className="mt-1 text-[10px] leading-[15px] text-[#9d9ea2]">{pick.note}</p>
                   </div>
-                  <p className="shrink-0 text-[13px] font-semibold text-[#1a1e26]">{formatMoney(pick.price)}</p>
+                  <p className="shrink-0 text-[13px] font-semibold leading-[19.5px] text-[#1a1e26]">
+                    {formatMoney(pick.price)}
+                  </p>
                 </div>
               ))}
             </div>
           </section>
 
-          <section className="mt-8">
-            <h4 className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#9d9ea2]">
+          <div className="border-t border-[#ebebec]" />
+
+          <section>
+            <h4 className="text-[10px] font-semibold uppercase leading-[15px] tracking-[0.7px] text-[#9d9ea2]">
               Bulk Inventory
             </h4>
             <div className="mt-3 flex flex-wrap gap-2">
               {bulkChips(lot).map((chip) => (
                 <span
                   key={`${chip.label}-${chip.qty}`}
-                  className="inline-flex h-[31px] items-center gap-1.5 rounded-lg bg-[#f5f5f6] px-2.5 text-[12px] leading-[17px] text-[#46494f]"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-[#ebebec] bg-[#f5f5f6] px-2.5 py-1.5 text-[11px] font-medium leading-[16.5px] text-[#46494f]"
                 >
                   {chip.label}
-                  <span className="text-[#9d9ea2]">×{chip.qty}</span>
+                  <span className="font-normal text-[#9d9ea2]">×{chip.qty}</span>
                 </span>
               ))}
             </div>
           </section>
 
-          <form id="quickview-bid" onSubmit={onBid} className="mt-8">
+          <form id="quickview-bid" onSubmit={onBid} className="space-y-2.5">
             <label className="relative block">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[14px] font-medium text-[#7a7b7c]">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[14px] font-medium leading-5 text-[#7a7b7c]">
                 US$
               </span>
               <input
@@ -393,23 +421,25 @@ export function QuickViewDrawer() {
                 value={bidAmount}
                 onChange={(e) => setBidAmount(e.target.value)}
                 placeholder="Enter new max bid"
-                className="h-[47px] w-full rounded-xl border border-[#ebebec] bg-white pl-14 pr-4 text-[14px] text-[#1a1e26] outline-none transition placeholder:text-[#9d9ea2] focus:border-[#480516] focus:ring-2 focus:ring-[#480516]/10"
+                className="h-[47px] w-full rounded-xl border-[1.5px] border-[#ebebec] bg-white pl-14 pr-4 text-[14px] leading-5 text-[#1a1e26] outline-none transition placeholder:text-[#1a1e26] focus:border-[#480516]"
               />
             </label>
-            <p className="mt-3 text-[12px] leading-[21px] text-[#7a7b7c]">
-              If you win, you will not be charged more than the max bid you enter. Bids are binding.
+            <p className="text-[14px] font-normal leading-[1.5] text-[#480516]">
+              Placing a {formatMoney(Number(bidAmount) || 0)} bid will lock{' '}
+              {formatMoney(Math.round((Number(bidAmount) || 0) * 0.1))} (10%) from your wallet as a temporary bid
+              hold.
             </p>
           </form>
         </div>
 
-        <footer className="mt-2 shrink-0 border-t border-[#ebebec] bg-white px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6 sm:py-5">
-          <div className="flex gap-3">
+        <footer className="mt-2 shrink-0 border-t border-[#ebebec] bg-white px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6">
+          <div className="flex items-center gap-3">
             <button
               type="submit"
               form="quickview-bid"
-              className="flex h-[49px] flex-1 items-center justify-center rounded-xl bg-[#480516] text-[14px] font-semibold text-white transition hover:bg-[#5c1a2a]"
+              className="flex min-w-0 flex-1 items-center justify-center rounded-xl bg-[#480516] py-3.5 text-[14px] font-medium leading-[21px] text-white transition hover:bg-[#5c1a2a]"
             >
-              Placebid
+              Place Bid
             </button>
             <button
               type="button"
@@ -417,14 +447,15 @@ export function QuickViewDrawer() {
                 dispatch(toggleWatch(lot.id))
                 dispatch(showToast(watched ? 'Removed from watchlist' : 'Added to watchlist'))
               }}
-              className="inline-flex h-[50px] flex-1 items-center justify-center gap-2 rounded-xl border border-[#ebebec] bg-white text-[13px] font-medium text-[#46494f] transition hover:bg-[#f5f5f6]"
+              className="inline-flex size-12 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-[#ebebec] bg-white text-[13px] font-medium leading-[19.5px] text-[#46494f] transition hover:bg-[#f5f5f6] sm:h-auto sm:w-auto sm:px-5 sm:py-3.5"
+              aria-label={watched ? 'Remove from watchlist' : 'Add to watchlist'}
             >
               <Icon src={heartIcon} size={13} />
-              {watched ? 'Watching' : 'Add to watchlist'}
+              <span className="hidden sm:inline">{watched ? 'Watching' : 'Add to watchlist'}</span>
             </button>
           </div>
-          <p className="mt-2.5 text-center text-[11px] leading-[15px] text-[#9d9ea2]">
-            By bidding you agree to our Terms of Auction
+          <p className="mt-2.5 text-center text-[10px] leading-[15px] text-[#9d9ea2]">
+            By bidding you agree to our <span className="underline">Terms of Auction</span>
           </p>
         </footer>
       </aside>

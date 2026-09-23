@@ -28,14 +28,14 @@ export function LotCard({ lot }: { lot: Lot; compact?: boolean }) {
   return (
     <div
       className={cn(
-        'relative z-0 flex h-full min-h-0 w-full flex-1 flex-col gap-2 rounded-xl border border-border bg-white p-2.5',
+        'relative z-0 flex h-full min-h-0 w-full flex-1 flex-col gap-2 rounded-xl border border-border bg-white',
         'transition-shadow duration-200 hover:z-[1] hover:shadow-[0px_8px_24px_rgba(26,30,38,0.12)]',
-        'sm:gap-2.5 sm:p-3',
+        'sm:gap-2.5',
       )}
     >
       <Link
         to={`/lots/${lot.slug}`}
-        className="relative flex h-[128px] w-full shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white md:h-[140px] xl:h-[156px]"
+        className="relative flex h-[128px] w-full shrink-0 items-center justify-center overflow-hidden rounded-t-xl bg-white md:h-[140px] xl:h-[156px]"
       >
         <img
           src={cardPattern}
@@ -48,16 +48,16 @@ export function LotCard({ lot }: { lot: Lot; compact?: boolean }) {
           className="relative z-[1] size-[92px] object-cover md:size-[104px] xl:size-[116px]"
         />
         {lot.dockVerified ? (
-          <span className="absolute left-1.5 top-1.5 z-[2] rounded-full bg-[#e6f4ed] px-1.5 py-0.5 text-[9px] font-semibold leading-[14px] text-[#0a6e38] md:left-2 md:top-2 md:px-2 md:text-[10px]">
+          <span className="absolute left-2 top-2 z-[2] rounded-full bg-[#e6f4ed] px-2.5 py-1 text-[11px] font-semibold leading-[16.5px] text-[#0a6e38]">
             Dock verification
           </span>
         ) : null}
-        <span className="absolute right-0 top-0 z-[2] flex h-6 items-center rounded-bl px-2 text-[10px] font-normal leading-[1.5] text-[#f2f6f4] bg-[#480516] md:h-7 md:px-2.5 md:text-[11px] xl:h-8 xl:px-3 xl:text-[12px]">
+        <span className="absolute right-0 top-0 z-[2] flex h-8 items-center rounded-bl rounded-tr-xl bg-[#480516] px-3 py-1 text-[12px] font-normal leading-[1.5] text-[#f2f6f4]">
           {`Tier 3 <$15,000`}
         </span>
       </Link>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-2 sm:gap-2.5">
+      <div className="flex min-h-0 flex-1 flex-col gap-2 px-2.5 pb-2.5 sm:gap-2.5 sm:px-3 sm:pb-3">
         <div className="relative h-3.5 w-[108px] shrink-0 overflow-hidden xl:h-4 xl:w-[132px]">
           <img
             src={brandTrek}

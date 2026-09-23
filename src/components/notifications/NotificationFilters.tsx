@@ -22,7 +22,7 @@ export function NotificationFilters({
   onChange: (id: NotificationFilter) => void
 }) {
   return (
-    <div className="flex flex-wrap gap-1 border-b border-border px-4 py-3">
+    <div className="flex h-[55px] items-center gap-1 overflow-x-auto border-b border-[#ebebec] px-4 scrollbar-none">
       {TABS.map((tab) => {
         const selected = value === tab.id
         const count = counts[tab.id]
@@ -32,7 +32,7 @@ export function NotificationFilters({
             type="button"
             onClick={() => onChange(tab.id)}
             className={cn(
-              'inline-flex h-[30px] items-center gap-1.5 rounded-full px-3 text-[13px] font-medium transition',
+              'inline-flex h-[30px] shrink-0 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium transition',
               selected ? 'bg-[#f4f4f4] text-[#1a1e26]' : 'text-[#7a7b7c] hover:text-[#1a1e26]',
             )}
           >

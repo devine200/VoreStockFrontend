@@ -1,111 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Button } from '@/components/shared/Button'
-import { EmptyState, PageHeader } from '@/components/shared/PageChrome'
-import { Icon } from '@/components/shared/Icon'
-import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { signContract } from '@/store/slices/accountSlices'
-import { showSuccess, showToast } from '@/store/slices/uiSlice'
-import { cn } from '@/utils/format'
-import type { Contract } from '@/types'
-import fileIcon from '@/assets/icons/file.svg'
-import arrowDownSm from '@/assets/icons/arrow-down-sm.svg'
-
-type AccordionKey = 'terms' | 'documents' | 'activity'
-
-function formatContractDate(value: string) {
-  const parsed = new Date(value)
-  if (!Number.isNaN(parsed.getTime()) && /\d{4}-\d{2}/.test(value)) {
-    return new Intl.DateTimeFormat('en-GB', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    }).format(parsed)
-  }
-  return value
-}
-
-function statusLabel(status: Contract['status']) {
-  switch (status) {
-    case 'awaiting_signature':
-      return 'Pending Signature'
-    case 'active':
-      return 'Active'
-    case 'completed':
-      return 'Completed'
-    case 'draft':
-      return 'Draft'
-    default:
-      return status
-  }
-}
-
-function statusTone(status: Contract['status']) {
-  switch (status) {
-    case 'active':
-      return 'bg-[#e8f6ee] text-[#1f7a45]'
-    case 'awaiting_signature':
-      return 'bg-[#fff6e5] text-[#b45309]'
-    case 'completed':
-      return 'bg-[#e8f1ff] text-[#1d4ed8]'
-    case 'draft':
-      return 'bg-[#f3f4f6] text-[#6b7280]'
-    default:
-      return 'bg-[#f3f4f6] text-[#6b7280]'
-  }
-}
-
-function StatusPill({ status }: { status: Contract['status'] }) {
-  return (
-    <span className={cn('inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium', statusTone(status))}>
-      {statusLabel(status)}
-    </span>
-  )
-}
-
-function DocIcon({ className }: { className?: string }) {
-  return <Icon src={fileIcon} size={18} className={className} />
-}
-
-function Accordion({
-  title,
-  open,
-  onToggle,
-  children,
-}: {
-  title: string
-  open: boolean
-  onToggle: () => void
-  children: React.ReactNode
-}) {
-  return (
-    <div className="border-t border-[#ebebec]">
-      <button
-        type="button"
-        onClick={onToggle}
-        className="flex w-full items-center justify-between py-4 text-left"
-      >
-        <span className="text-[14px] font-semibold text-[#1a1e26]">{title}</span>
-        <Icon
-          src={arrowDownSm}
-          size={16}
-          className={cn('transition', open ? 'rotate-180' : '')}
-        />
-      </button>
-      {open ? <div className="pb-4">{children}</div> : null}
-    </div>
-  )
-}
+import { createPortal } from 'react-dom'
+import { ContractDetailEmpty, ContractDetailPanel } from '@/components/contracts/ContractDetailPanel'
+import { ContractsSidebar } from '@/components/contracts/ContractsSidebar'
+import { EmptyState } from '@/components/shared/PageChrome'
+import { useAppSelector } from '@/store/hooks'
 
 export function ContractsPage() {
-  const dispatch = useAppDispatch()
   const contracts = useAppSelector((s) => s.contracts.items)
-  const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [openSections, setOpenSections] = useState<Record<AccordionKey, boolean>>({
-    terms: true,
-    documents: true,
-    activity: true,
-  })
+  const [selectedId, setSelectedId] = useState<string | null>(contracts[0]?.id ?? null)
+  const [sheetOpen, setSheetOpen] = useState(false)
 
   const awaiting = useMemo(
     () => contracts.filter((c) => c.status === 'awaiting_signature').length,
@@ -114,7 +17,7 @@ export function ContractsPage() {
 
   useEffect(() => {
     if (!contracts.length) {
-      setSelectedId(null)
+      if (selectedId !== null) setSelectedId(null)
       return
     }
     if (!selectedId || !contracts.some((c) => c.id === selectedId)) {
@@ -122,227 +25,75 @@ export function ContractsPage() {
     }
   }, [contracts, selectedId])
 
-  const selected = contracts.find((c) => c.id === selectedId) ?? null
-  const signedCount = selected ? selected.parties.filter((p) => p.signed).length : 0
+  useEffect(() => {
+    if (!sheetOpen) return
+    document.body.style.overflow = 'hidden'
+    const onResize = () => {
+      if (window.matchMedia('(min-width: 1024px)').matches) setSheetOpen(false)
+    }
+    window.addEventListener('resize', onResize)
+    return () => {
+      document.body.style.overflow = ''
+      window.removeEventListener('resize', onResize)
+    }
+  }, [sheetOpen])
 
-  const toggleSection = (key: AccordionKey) => {
-    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }))
+  const selected = contracts.find((c) => c.id === selectedId) ?? null
+
+  const selectContract = (id: string) => {
+    setSelectedId(id)
+    if (typeof window !== 'undefined' && !window.matchMedia('(min-width: 1024px)').matches) {
+      setSheetOpen(true)
+    }
   }
 
   return (
-    <div className="animate-fade-in space-y-6">
-      <PageHeader
-        title="Contracts"
-        subtitle="Agreements connected to your purchases and transactions"
-        actions={
-          awaiting > 0 ? (
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#fff6e5] px-3 py-1.5 text-[13px] font-medium text-[#8a6116]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#b45309]" />
-              {awaiting} contract{awaiting === 1 ? '' : 's'} awaiting signature
-            </span>
-          ) : null
-        }
-      />
-
-      <div className="grid gap-6 xl:grid-cols-[minmax(280px,360px)_minmax(0,1fr)]">
-        {/* Sidebar */}
-        <aside className="h-fit overflow-hidden rounded-xl border border-[#ebebec] bg-white">
-          <div className="border-b border-[#ebebec] px-4 py-3">
-            <h2 className="text-[14px] font-semibold text-[#1a1e26]">All contracts</h2>
-          </div>
-          {contracts.length === 0 ? (
-            <div className="p-4">
-              <EmptyState title="No contracts" body="Contracts appear here after you win and settle a lot." />
-            </div>
-          ) : (
-            <div className="space-y-2 p-2">
-              {contracts.map((c) => {
-                const active = c.id === selectedId
-                return (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => setSelectedId(c.id)}
-                    className={cn(
-                      'flex w-full gap-3 rounded-xl p-3 text-left transition',
-                      active
-                        ? 'border border-[#480516] bg-[#fdfbfb]'
-                        : 'border border-transparent hover:bg-[#f9fafb]',
-                    )}
-                  >
-                    <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#f5f5f6] text-[#480516]">
-                      <DocIcon />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="line-clamp-2 text-[13px] font-semibold leading-snug text-[#1a1e26]">
-                        {c.title}
-                      </p>
-                      <p className="mt-1 text-[11px] text-[#9ca3af]">
-                        {c.contractNumber} · {c.orderId}
-                      </p>
-                      <div className="mt-2">
-                        <StatusPill status={c.status} />
-                      </div>
-                    </div>
-                  </button>
-                )
-              })}
-            </div>
-          )}
-        </aside>
-
-        {/* Detail */}
-        <section className="rounded-xl border border-[#ebebec] bg-white p-5 sm:p-6">
-          {!selected ? (
-            <EmptyState title="Select a contract" body="Choose a contract from the list to review details." />
-          ) : (
-            <div className="flex h-full flex-col">
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="text-[12px] text-[#9ca3af]">
-                    {selected.contractNumber}
-                    <span className="mx-2 text-[#d1d5db]">·</span>
-                    {selected.orderId}
-                  </p>
-                  <h2 className="mt-2 text-[20px] font-semibold leading-snug text-[#1a1e26]">
-                    {selected.title}
-                  </h2>
-                </div>
-                <StatusPill status={selected.status} />
-              </div>
-
-              <div className="mt-5 grid grid-cols-1 gap-4 rounded-xl border border-[#ebebec] px-4 py-4 sm:grid-cols-3">
-                {(
-                  [
-                    ['Contract date', selected.contractDate],
-                    ['Effective date', selected.effectiveDate],
-                    ['Expiration date', selected.expirationDate],
-                  ] as const
-                ).map(([label, value], i) => (
-                  <div key={label} className={cn(i > 0 && 'sm:border-l sm:border-[#ebebec] sm:pl-4')}>
-                    <p className="text-[11px] font-medium uppercase tracking-wide text-[#9ca3af]">{label}</p>
-                    <p className="mt-1 text-[14px] font-semibold text-[#1a1e26]">{formatContractDate(value)}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6">
-                <p className="text-[11px] font-medium uppercase tracking-wide text-[#9ca3af]">
-                  Parties · {signedCount}/{selected.parties.length} signed
-                </p>
-                <div className="mt-3 space-y-3">
-                  {selected.parties.map((party) => (
-                    <div key={party.name} className="flex items-center gap-3">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#480516] text-[12px] font-semibold text-white">
-                        {party.initials}
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[14px] font-semibold text-[#1a1e26]">{party.name}</p>
-                        <p className="text-[12px] text-[#9ca3af]">{party.role}</p>
-                      </div>
-                      <div className="text-right">
-                        {party.signed ? (
-                          <>
-                            <p className="text-[11px] text-[#9ca3af]">
-                              {party.signedAt ? formatContractDate(party.signedAt) : ''}
-                            </p>
-                            <span className="mt-0.5 inline-flex rounded-full bg-[#e8f6ee] px-2 py-0.5 text-[11px] font-medium text-[#1f7a45]">
-                              Signed
-                            </span>
-                          </>
-                        ) : (
-                          <span className="inline-flex rounded-full bg-[#fff6e5] px-2 py-0.5 text-[11px] font-medium text-[#b45309]">
-                            Awaiting
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <Accordion title="Terms & Conditions" open={openSections.terms} onToggle={() => toggleSection('terms')}>
-                  <ol className="list-decimal space-y-2 pl-5 text-[13px] leading-relaxed text-[#4b5563]">
-                    {selected.terms.map((term) => (
-                      <li key={term}>{term}</li>
-                    ))}
-                  </ol>
-                </Accordion>
-
-                <Accordion title="Documents" open={openSections.documents} onToggle={() => toggleSection('documents')}>
-                  <div className="space-y-2">
-                    {selected.documents.map((doc) => (
-                      <div
-                        key={doc.name}
-                        className="flex items-center gap-3 rounded-xl bg-[#f5f5f6] px-3 py-2.5"
-                      >
-                        <span className="text-[#480516]">
-                          <DocIcon />
-                        </span>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-[13px] font-medium text-[#480516]">{doc.name}</p>
-                          <p className="text-[11px] text-[#9ca3af]">{doc.size}</p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => dispatch(showToast(`Downloading ${doc.name}`))}
-                          className="shrink-0 text-[13px] font-semibold text-[#480516] hover:underline"
-                        >
-                          Download
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </Accordion>
-
-                <Accordion title="Activity" open={openSections.activity} onToggle={() => toggleSection('activity')}>
-                  <ul className="space-y-3">
-                    {selected.activity.map((event) => (
-                      <li key={`${event.label}-${event.at}`} className="flex items-start justify-between gap-4">
-                        <div className="flex gap-2">
-                          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#480516]" />
-                          <p className="text-[13px] text-[#4b5563]">{event.label}</p>
-                        </div>
-                        <p className="shrink-0 text-[12px] text-[#9ca3af]">{formatContractDate(event.at)}</p>
-                      </li>
-                    ))}
-                  </ul>
-                </Accordion>
-              </div>
-
-              <div className="mt-auto flex flex-wrap gap-2 border-t border-[#ebebec] pt-5">
-                {selected.status === 'awaiting_signature' ? (
-                  <Button
-                    onClick={() => {
-                      dispatch(signContract(selected.id))
-                      dispatch(
-                        showSuccess({
-                          title: 'Contract Signed',
-                          body: 'Your signature was recorded. The agreement is now active and both parties have been notified.',
-                          actionLabel: 'Done',
-                        }),
-                      )
-                    }}
-                  >
-                    Sign contract
-                  </Button>
-                ) : null}
-                <Button
-                  variant="secondary"
-                  className="border-[#480516] text-[#480516]"
-                  onClick={() => dispatch(showToast('PDF download started'))}
-                >
-                  Download PDF
-                </Button>
-                <Link to="/support">
-                  <Button variant="secondary">Contact support</Button>
-                </Link>
-              </div>
-            </div>
-          )}
-        </section>
+    <div className="animate-fade-in min-w-0 space-y-6">
+      <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-[24px] font-semibold leading-8 tracking-[-0.5px] text-[#1a1e26]">Contracts</h1>
+          <p className="pt-1 text-[14px] leading-5 text-[#7a7b7c]">
+            Agreements connected to your purchases and transactions
+          </p>
+        </div>
+        {awaiting > 0 ? (
+          <span className="inline-flex h-[34px] w-fit items-center gap-2 rounded-full bg-[#fff6e5] px-3 text-[13px] font-medium text-[#8a6116]">
+            <span className="h-2 w-2 rounded-full bg-[#b45309]" />
+            {awaiting} contract{awaiting === 1 ? '' : 's'} awaiting signature
+          </span>
+        ) : null}
       </div>
+
+      {contracts.length === 0 ? (
+        <EmptyState title="No contracts" body="Contracts appear here after you win and settle a lot." />
+      ) : (
+        <div className="flex min-w-0 flex-col gap-5 lg:flex-row lg:items-start">
+          <ContractsSidebar contracts={contracts} selectedId={selectedId} onSelect={selectContract} />
+          <div className="hidden min-w-0 flex-1 lg:sticky lg:top-24 lg:flex lg:h-[calc(100vh-8rem)]">
+            {selected ? <ContractDetailPanel contract={selected} /> : <ContractDetailEmpty />}
+          </div>
+        </div>
+      )}
+
+      {sheetOpen && selected
+        ? createPortal(
+            <div className="fixed inset-0 z-[70] lg:hidden" role="dialog" aria-modal aria-label="Contract details">
+              <button
+                type="button"
+                className="absolute inset-0 bg-[#1a1e26]/50"
+                aria-label="Close contract details"
+                onClick={() => setSheetOpen(false)}
+              />
+              <aside className="absolute inset-x-0 bottom-0 flex max-h-[min(92dvh,820px)] flex-col overflow-hidden rounded-t-3xl bg-white shadow-[0_-12px_40px_rgba(26,30,38,0.2)]">
+                <div className="flex justify-center pt-2.5" aria-hidden>
+                  <span className="h-1 w-10 rounded-full bg-[#d7d7d9]" />
+                </div>
+                <ContractDetailPanel contract={selected} onClose={() => setSheetOpen(false)} />
+              </aside>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   )
 }

@@ -18,6 +18,7 @@ import navAudit from './nav-audit.svg'
 import navAdminUsers from './nav-admin-users.svg'
 import search from './search.svg'
 import bell from './bell.svg'
+import bellPlain from './bell-plain.svg'
 import avatarBg from './avatar-bg.svg'
 import queueVerification from './queue-verification.svg'
 import queueSettlements from './queue-settlements.svg'
@@ -37,6 +38,23 @@ import refresh from './refresh.svg'
 import dotDone from './dot-done.svg'
 import dotPending from './dot-pending.svg'
 import exportCsv from './export.svg'
+import check from './check.svg'
+import close from './close.svg'
+import filePreview from './file-preview.svg'
+import refreshBlue from './refresh-blue.svg'
+import referralCheck from './referrals/check.svg'
+import referralStagePending from './referrals/stage-pending.svg'
+import referralHistDot from './referrals/hist-dot.svg'
+import referralToggleOn from './referrals/toggle-on.svg'
+import referralInfo from './referrals/info.svg'
+import referralBannerCheck from './referrals/banner-check.svg'
+import referralWarn from './referrals/warn.svg'
+import txnWarning from './txn-warning.svg'
+import txnRelatedChevron from './txn-related-chevron.svg'
+import syncRetry from './sync/retry.svg'
+import syncSyncing from './sync/syncing.svg'
+import syncPublish from './sync/publish.svg'
+import syncWarnDot from './sync/warn-dot.svg'
 
 export const adminLogo = logo
 
@@ -60,6 +78,7 @@ export const adminIcons = {
   navAdminUsers,
   search,
   bell,
+  bellPlain,
   avatarBg,
   queueVerification,
   queueSettlements,
@@ -79,4 +98,21 @@ export const adminIcons = {
   dotDone,
   dotPending,
   exportCsv,
+  check,
+  close,
+  filePreview,
+  refreshBlue,
+  referralCheck,
+  referralStagePending,
+  referralHistDot,
+  referralToggleOn,
+  referralInfo,
+  referralBannerCheck,
+  referralWarn,
+  txnWarning,
+  txnRelatedChevron,
+  syncRetry,
+  syncSyncing,
+  syncPublish,
+  syncWarnDot,
 }

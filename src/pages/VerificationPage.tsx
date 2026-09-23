@@ -1,8 +1,7 @@
-import { FormEvent, useState } from 'react'
+import { FormEvent, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/shared/Button'
 import { Icon } from '@/components/shared/Icon'
-import { PageHeader } from '@/components/shared/PageChrome'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { showSuccess, showToast } from '@/store/slices/uiSlice'
 import { cn, formatMoney } from '@/utils/format'
@@ -69,16 +68,37 @@ const DOCUMENTS = [
   { name: 'CAC-certificate.pdf', detail: undefined, status: 'review' as const },
 ]
 
+const LIMITS = [
+  {
+    label: 'Bid limit',
+    value: formatMoney(50000),
+    foot: `→ ${formatMoney(500000)} after KYB`,
+    valueClass: 'text-[#1a1e26]',
+  },
+  {
+    label: 'Daily withdrawal',
+    value: formatMoney(25000),
+    foot: `→ ${formatMoney(150000)} after KYB`,
+    valueClass: 'text-[#1a1e26]',
+  },
+  {
+    label: 'Crypto deposits',
+    value: 'Enabled',
+    foot: 'No change',
+    valueClass: 'text-[#0a6e38]',
+  },
+]
+
 function StatusPill({ status }: { status: StepStatus | 'review' }) {
   const map = {
-    verified: { label: 'Verified', className: 'bg-[#e8f6ee] text-[#1f7a45]' },
+    verified: { label: 'Verified', className: 'bg-[#e8f6ee] text-[#0a6e38]' },
     pending: { label: 'Pending', className: 'bg-[#fff6e5] text-[#b45309]' },
     unverified: { label: 'Unverified', className: 'bg-[#f3f4f6] text-[#6b7280]' },
     review: { label: 'In review', className: 'bg-[#fff6e5] text-[#b45309]' },
   }
   const tone = map[status]
   return (
-    <span className={cn('inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium', tone.className)}>
+    <span className={cn('inline-flex rounded-full px-2.5 py-0.5 text-[12px] font-medium leading-[17px]', tone.className)}>
       {tone.label}
     </span>
   )
@@ -87,28 +107,23 @@ function StatusPill({ status }: { status: StepStatus | 'review' }) {
 function StepIcon({ status }: { status: StepStatus }) {
   if (status === 'verified') {
     return (
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#e8f6ee]">
+      <span className="flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#e8f6ee]">
         <Icon src={checkCircleIcon} size={16} />
       </span>
     )
   }
   if (status === 'pending') {
     return (
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#fff6e5]">
-        <Icon src={clockIcon} size={16} />
+      <span className="flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#fff6e5]">
+        <Icon src={clockIcon} size={14} />
       </span>
     )
   }
-  return <span className="h-8 w-8 shrink-0 rounded-full border-2 border-[#d1d5db] bg-white" />
+  return <span className="size-5 shrink-0 rounded-full border-2 border-[#d1d5db] bg-white" />
 }
 
-function DocIcon() {
-  return <Icon src={fileIcon} size={18} />
-}
-
-function UploadIcon() {
-  return <Icon src={uploadIcon} size={14} />
-}
+const fieldClass =
+  'mt-1.5 h-[42px] w-full rounded-xl border border-[#ebebec] bg-white px-3 text-[14px] text-[#1a1e26] outline-none focus:border-[#480516]'
 
 export function VerificationPage() {
   const dispatch = useAppDispatch()
@@ -116,6 +131,8 @@ export function VerificationPage() {
   const completedSteps = CHECKLIST.filter((s) => s.status === 'verified').length
   const totalSteps = CHECKLIST.length
   const progressPct = Math.round((completedSteps / totalSteps) * 100)
+  const fileRef = useRef<HTMLInputElement>(null)
+  const [fileTarget, setFileTarget] = useState<string | null>(null)
 
   const [legalName, setLegalName] = useState(user?.company ?? 'Northbridge Trading Ltd')
   const [regNumber, setRegNumber] = useState('RC-1487203')
@@ -134,238 +151,237 @@ export function VerificationPage() {
   }
 
   const onAction = (item: ChecklistItem) => {
-    const labels = {
-      replace: 'Select a replacement document to upload',
-      complete: 'Owner confirmation form opened',
-      upload: 'Select a settlement account document to upload',
+    if (item.action === 'complete') {
+      dispatch(showToast('Owner confirmation form opened'))
+      return
     }
-    dispatch(showToast(labels[item.action!]))
+    setFileTarget(item.id)
+    fileRef.current?.click()
   }
 
-  return (
-    <div className="animate-fade-in space-y-6">
-      <PageHeader
-        title="Verification"
-        subtitle="KYC and KYB status, documents and limits"
-        actions={
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e8f6ee] px-3 py-1.5 text-[13px] font-medium text-[#1f7a45]">
-              <span aria-hidden>✓</span> KYC Verified
+  const onFilePicked = (file?: File) => {
+    if (!file) return
+    const label = fileTarget === 'settlement' ? 'Settlement account document' : 'Replacement document'
+    dispatch(showToast(`${label} “${file.name}” ready to submit`))
+    setFileTarget(null)
+  }
+
+  const checklist = (
+    <section className="order-1 overflow-hidden rounded-2xl border border-[#ebebec] bg-white p-5 sm:p-6 lg:order-none">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-[16px] font-semibold leading-6 text-[#1a1e26]">Verification checklist</h2>
+        <p className="shrink-0 text-[13px] text-[#9ca3af]">
+          {completedSteps} of {totalSteps} steps complete
+        </p>
+      </div>
+      <div className="mt-4">
+        <div className="h-2 overflow-hidden rounded-full bg-[#ebebec]">
+          <div className="h-full rounded-full bg-[#480516]" style={{ width: `${progressPct}%` }} />
+        </div>
+        <div className="mt-2 flex justify-between px-0.5">
+          {CHECKLIST.map((step, i) => (
+            <span
+              key={step.id}
+              className={cn('h-2 w-2 rounded-full', i < completedSteps ? 'bg-[#480516]' : 'bg-[#d1d5db]')}
+            />
+          ))}
+        </div>
+      </div>
+      <div className="mt-5 divide-y divide-[#ebebec]">
+        {CHECKLIST.map((item) => (
+          <div key={item.id} className="flex items-start gap-3 py-3.5">
+            <span className="mt-0.5">
+              <StepIcon status={item.status} />
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#fff6e5] px-3 py-1.5 text-[13px] font-medium text-[#b45309]">
-              KYB Pending
-            </span>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-[14px] font-medium leading-5 text-[#1a1e26]">{item.title}</p>
+                <StatusPill status={item.status} />
+              </div>
+              <p className="mt-0.5 text-[12px] leading-[18px] text-[#9ca3af]">{item.detail}</p>
+              {item.action ? (
+                <button
+                  type="button"
+                  onClick={() => onAction(item)}
+                  className="mt-2 inline-flex h-[30px] items-center gap-1.5 rounded-xl border border-[#ebebec] bg-white px-3 text-[12px] font-medium text-[#46494f] hover:bg-[#f8f8f9]"
+                >
+                  {item.action === 'complete' ? (
+                    '+ Complete'
+                  ) : (
+                    <>
+                      <Icon src={uploadIcon} size={13} />
+                      {item.action === 'replace' ? 'Replace' : 'Upload'}
+                    </>
+                  )}
+                </button>
+              ) : null}
+            </div>
           </div>
-        }
+        ))}
+      </div>
+    </section>
+  )
+
+  const business = (
+    <section className="overflow-hidden rounded-2xl border border-[#ebebec] bg-white p-5 sm:p-6">
+      <h2 className="text-[16px] font-semibold leading-6 text-[#1a1e26]">Business details (KYB)</h2>
+      <p className="mt-1 text-[13px] leading-4 text-[#9ca3af]">Used for invoicing, customs and escrow contracts.</p>
+      <form onSubmit={saveBusiness} className="mt-5 space-y-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="block text-[12px] font-medium text-[#4b5563]">
+            Legal entity name
+            <input value={legalName} onChange={(e) => setLegalName(e.target.value)} className={fieldClass} />
+          </label>
+          <label className="block text-[12px] font-medium text-[#4b5563]">
+            Registration number
+            <input value={regNumber} onChange={(e) => setRegNumber(e.target.value)} className={fieldClass} />
+          </label>
+          <label className="block text-[12px] font-medium text-[#4b5563]">
+            Tax ID / TIN
+            <input value={taxId} onChange={(e) => setTaxId(e.target.value)} className={fieldClass} />
+          </label>
+          <label className="block text-[12px] font-medium text-[#4b5563]">
+            Jurisdiction
+            <input value={jurisdiction} onChange={(e) => setJurisdiction(e.target.value)} className={fieldClass} />
+          </label>
+        </div>
+        <Button type="submit" className="h-10 w-full">
+          Save business details
+        </Button>
+      </form>
+    </section>
+  )
+
+  const limits = (
+    <section className="overflow-hidden rounded-2xl border border-[#ebebec] bg-white p-5 sm:p-6">
+      <h2 className="text-[16px] font-semibold leading-6 text-[#1a1e26]">Account limits</h2>
+      <p className="mt-1 text-[13px] leading-4 text-[#9ca3af]">Current limits — unlock more by completing KYB</p>
+      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-1 lg:gap-0 lg:divide-y lg:divide-[#ebebec]">
+        {LIMITS.map((row) => (
+          <div
+            key={row.label}
+            className="rounded-xl bg-[#f8f8f9] px-4 py-3 lg:rounded-none lg:bg-transparent lg:px-0 lg:py-3"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[14px] font-medium text-[#1a1e26]">{row.label}</p>
+                <p className="mt-0.5 text-[12px] text-[#9ca3af]">{row.foot}</p>
+              </div>
+              <p className={cn('shrink-0 text-[15px] font-semibold tabular-nums', row.valueClass)}>{row.value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+
+  const documents = (
+    <section className="overflow-hidden rounded-2xl border border-[#ebebec] bg-white p-5 sm:p-6">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-[16px] font-semibold leading-6 text-[#1a1e26]">Submitted documents</h2>
+        <button
+          type="button"
+          onClick={() => {
+            setFileTarget('upload')
+            fileRef.current?.click()
+          }}
+          className="inline-flex h-[30px] items-center gap-1.5 rounded-xl border border-[#ebebec] bg-white px-3 text-[12px] font-medium text-[#46494f] hover:bg-[#f8f8f9]"
+        >
+          <Icon src={uploadIcon} size={13} /> Upload
+        </button>
+      </div>
+      <div className="mt-4 divide-y divide-[#ebebec]">
+        {DOCUMENTS.map((doc) => (
+          <div key={doc.name} className="flex items-center gap-3 py-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#f8f8f9] text-[#480516]">
+              <Icon src={fileIcon} size={18} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[14px] font-medium text-[#1a1e26]">{doc.name}</p>
+              {doc.detail ? <p className="text-[12px] text-[#9ca3af]">{doc.detail}</p> : null}
+            </div>
+            <StatusPill status={doc.status === 'review' ? 'review' : 'verified'} />
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+
+  const help = (
+    <section className="overflow-hidden rounded-2xl border border-[#ebebec] bg-white p-5 sm:p-6">
+      <div className="flex gap-3">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#f8f8f9] text-[15px] font-semibold text-[#7a7b7c]">
+          ?
+        </span>
+        <div className="min-w-0">
+          <h2 className="text-[15px] font-semibold text-[#1a1e26]">Need help with verification?</h2>
+          <p className="mt-1 text-[13px] leading-relaxed text-[#7a7b7c]">
+            Our compliance team reviews documents within 1–2 business days. If a document is rejected, you can
+            re-upload a clearer version.
+          </p>
+          <Link to="/support" className="mt-3 inline-block text-[13px] font-medium text-[#480516] hover:underline">
+            Contact support →
+          </Link>
+        </div>
+      </div>
+    </section>
+  )
+
+  return (
+    <div className="animate-fade-in min-w-0 space-y-6">
+      <input
+        ref={fileRef}
+        type="file"
+        accept=".pdf,.png,.jpg,.jpeg"
+        className="hidden"
+        onChange={(e) => {
+          onFilePicked(e.target.files?.[0])
+          e.target.value = ''
+        }}
       />
 
-      <div className="flex flex-col gap-3 rounded-xl border border-[#f2d9a8] bg-[#fff8e6] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex gap-3">
-          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#fff1cc] text-[#b45309]">
-            <Icon src={clockIcon} size={16} />
-          </span>
-          <p className="text-[14px] leading-relaxed text-[#5c4a1f]">
-            <span className="font-semibold text-[#1a1e26]">Business verification in review</span>
-            {' — '}
-            Your KYC is complete. KYB documents are being reviewed — this usually takes 1–2 business days. You
-            can continue bidding on KYC-only lots while you wait.
-          </p>
+      <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-[24px] font-semibold leading-8 tracking-[-0.5px] text-[#1a1e26]">Verification</h1>
+          <p className="pt-1 text-[14px] leading-5 text-[#7a7b7c]">KYC and KYB status, documents and limits</p>
         </div>
-        <span className="shrink-0 text-[13px] font-semibold text-[#b45309]">Pending</span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="inline-flex h-[35px] items-center gap-1.5 rounded-full bg-[#e8f6ee] px-3.5 text-[13px] font-medium text-[#0a6e38]">
+            <span aria-hidden>✓</span> KYC Verified
+          </span>
+          <span className="inline-flex h-[35px] items-center rounded-full bg-[#fff6e5] px-3.5 text-[13px] font-medium text-[#b45309]">
+            KYB Pending
+          </span>
+        </div>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)]">
-        <div className="space-y-6">
-          {/* Checklist */}
-          <section className="rounded-xl border border-[#ebebec] bg-white p-5 sm:p-6">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-[16px] font-semibold text-[#1a1e26]">Verification checklist</h2>
-              <p className="text-[13px] text-[#9ca3af]">
-                {completedSteps} of {totalSteps} steps complete
-              </p>
-            </div>
-
-            <div className="mt-4">
-              <div className="h-2 overflow-hidden rounded-full bg-[#ebebec]">
-                <div className="h-full rounded-full bg-[#480516]" style={{ width: `${progressPct}%` }} />
-              </div>
-              <div className="mt-2 flex justify-between px-0.5">
-                {CHECKLIST.map((step, i) => (
-                  <span
-                    key={step.id}
-                    className={cn(
-                      'h-2 w-2 rounded-full',
-                      i < completedSteps ? 'bg-[#480516]' : 'bg-[#d1d5db]',
-                    )}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-5 divide-y divide-[#ebebec]">
-              {CHECKLIST.map((item) => (
-                <div key={item.id} className="flex flex-wrap items-center gap-3 py-3.5">
-                  <StepIcon status={item.status} />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[14px] font-medium text-[#1a1e26]">{item.title}</p>
-                    <p className="text-[12px] text-[#9ca3af]">{item.detail}</p>
-                  </div>
-                  <StatusPill status={item.status} />
-                  {item.action ? (
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => onAction(item)}
-                    >
-                      {item.action === 'replace' ? (
-                        <>
-                          <UploadIcon /> Replace
-                        </>
-                      ) : item.action === 'complete' ? (
-                        '+ Complete'
-                      ) : (
-                        <>
-                          <UploadIcon /> Upload
-                        </>
-                      )}
-                    </Button>
-                  ) : null}
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Business details */}
-          <section className="rounded-xl border border-[#ebebec] bg-white p-5 sm:p-6">
-            <h2 className="text-[16px] font-semibold text-[#1a1e26]">Business details (KYB)</h2>
-            <p className="mt-1 text-[13px] text-[#9ca3af]">
-              Used for invoicing, customs and escrow contracts.
+      <div className="flex flex-col gap-3 rounded-2xl border border-[#f2d9a8] bg-[#fff8e6] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="flex gap-3">
+          <span className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-[#fff1cc] text-[#b45309]">
+            <Icon src={clockIcon} size={20} />
+          </span>
+          <div>
+            <p className="text-[14px] font-semibold leading-5 text-[#1a1e26]">Business verification in review</p>
+            <p className="mt-0.5 text-[13px] leading-5 text-[#5c4a1f]">
+              Your KYC is complete. KYB documents are being reviewed — this usually takes 1–2 business days. You can
+              continue bidding on KYC-only lots while you wait.
             </p>
-            <form onSubmit={saveBusiness} className="mt-5 space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block text-[12px] font-medium text-[#4b5563]">
-                  Legal entity name
-                  <input
-                    value={legalName}
-                    onChange={(e) => setLegalName(e.target.value)}
-                    className="mt-1.5 h-11 w-full rounded-xl border border-[#ebebec] bg-white px-3 text-[14px] text-[#1a1e26] outline-none focus:border-[#480516]"
-                  />
-                </label>
-                <label className="block text-[12px] font-medium text-[#4b5563]">
-                  Registration number
-                  <input
-                    value={regNumber}
-                    onChange={(e) => setRegNumber(e.target.value)}
-                    className="mt-1.5 h-11 w-full rounded-xl border border-[#ebebec] bg-white px-3 text-[14px] text-[#1a1e26] outline-none focus:border-[#480516]"
-                  />
-                </label>
-                <label className="block text-[12px] font-medium text-[#4b5563]">
-                  Tax ID / TIN
-                  <input
-                    value={taxId}
-                    onChange={(e) => setTaxId(e.target.value)}
-                    className="mt-1.5 h-11 w-full rounded-xl border border-[#ebebec] bg-white px-3 text-[14px] text-[#1a1e26] outline-none focus:border-[#480516]"
-                  />
-                </label>
-                <label className="block text-[12px] font-medium text-[#4b5563]">
-                  Jurisdiction
-                  <input
-                    value={jurisdiction}
-                    onChange={(e) => setJurisdiction(e.target.value)}
-                    className="mt-1.5 h-11 w-full rounded-xl border border-[#ebebec] bg-white px-3 text-[14px] text-[#1a1e26] outline-none focus:border-[#480516]"
-                  />
-                </label>
-              </div>
-              <Button type="submit" className="w-full">
-                Save business details
-              </Button>
-            </form>
-          </section>
+          </div>
         </div>
+        <span className="inline-flex h-6 shrink-0 items-center self-start rounded-full bg-[#fff1cc] px-3 text-[12px] font-semibold text-[#b45309] sm:self-center">
+          Pending
+        </span>
+      </div>
 
-        <div className="space-y-6">
-          {/* Limits */}
-          <section className="rounded-xl border border-[#ebebec] bg-white p-5 sm:p-6">
-            <h2 className="text-[16px] font-semibold text-[#1a1e26]">Account limits</h2>
-            <p className="mt-1 text-[13px] text-[#9ca3af]">
-              Current limits — unlock more by completing KYB
-            </p>
-            <div className="mt-4 divide-y divide-[#ebebec]">
-              <div className="flex items-start justify-between gap-3 py-3">
-                <div>
-                  <p className="text-[14px] font-medium text-[#1a1e26]">Bid limit</p>
-                  <p className="text-[12px] text-[#9ca3af]">→ {formatMoney(500000)} after KYB</p>
-                </div>
-                <p className="text-[15px] font-semibold tabular-nums text-[#1a1e26]">{formatMoney(50000)}</p>
-              </div>
-              <div className="flex items-start justify-between gap-3 py-3">
-                <div>
-                  <p className="text-[14px] font-medium text-[#1a1e26]">Daily withdrawal</p>
-                  <p className="text-[12px] text-[#9ca3af]">→ {formatMoney(150000)} after KYB</p>
-                </div>
-                <p className="text-[15px] font-semibold tabular-nums text-[#1a1e26]">{formatMoney(25000)}</p>
-              </div>
-              <div className="flex items-start justify-between gap-3 py-3">
-                <div>
-                  <p className="text-[14px] font-medium text-[#1a1e26]">Crypto deposits</p>
-                  <p className="text-[12px] text-[#9ca3af]">No change</p>
-                </div>
-                <p className="text-[15px] font-semibold text-[#1f7a45]">Enabled</p>
-              </div>
-            </div>
-          </section>
-
-          {/* Documents */}
-          <section className="rounded-xl border border-[#ebebec] bg-white p-5 sm:p-6">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-[16px] font-semibold text-[#1a1e26]">Submitted documents</h2>
-              <Button
-                type="button"
-                size="sm"
-                variant="secondary"
-                onClick={() => dispatch(showToast('Select a document to upload'))}
-              >
-                <UploadIcon /> Upload
-              </Button>
-            </div>
-            <div className="mt-4 divide-y divide-[#ebebec]">
-              {DOCUMENTS.map((doc) => (
-                <div key={doc.name} className="flex items-center gap-3 py-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#f5f5f6] text-[#480516]">
-                    <DocIcon />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[14px] font-medium text-[#1a1e26]">{doc.name}</p>
-                    {doc.detail ? <p className="text-[12px] text-[#9ca3af]">{doc.detail}</p> : null}
-                  </div>
-                  <StatusPill status={doc.status === 'review' ? 'review' : 'verified'} />
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Help */}
-          <section className="rounded-xl border border-[#ebebec] bg-white p-5 sm:p-6">
-            <div className="flex gap-3">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f5f5f6] text-[#7a7b7c]">
-                ?
-              </span>
-              <div>
-                <h2 className="text-[15px] font-semibold text-[#1a1e26]">Need help with verification?</h2>
-                <p className="mt-1 text-[13px] leading-relaxed text-[#7a7b7c]">
-                  Our compliance team reviews documents within 1–2 business days. If a document is rejected, you
-                  can re-upload a clearer version.
-                </p>
-                <Link
-                  to="/support"
-                  className="mt-3 inline-block text-[13px] font-medium text-[#480516] hover:underline"
-                >
-                  Contact support →
-                </Link>
-              </div>
-            </div>
-          </section>
+      <div className="flex min-w-0 flex-col gap-5 lg:grid lg:grid-cols-[minmax(0,630px)_minmax(0,1fr)] lg:items-start">
+        <div className="contents lg:flex lg:flex-col lg:gap-5">
+          {checklist}
+          <div className="order-4 lg:contents">{business}</div>
+        </div>
+        <div className="contents lg:flex lg:flex-col lg:gap-5">
+          <div className="order-2 lg:contents">{limits}</div>
+          <div className="order-3 lg:contents">{documents}</div>
+          <div className="order-5 lg:contents">{help}</div>
         </div>
       </div>
     </div>

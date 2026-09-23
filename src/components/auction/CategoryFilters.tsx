@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { icons } from '@/assets'
 import { Icon } from '@/components/shared/Icon'
 import { cn } from '@/utils/format'
@@ -85,9 +85,155 @@ function Section({ children, className }: { children: React.ReactNode; className
   )
 }
 
+const PRICE_MIN = 0
+const PRICE_MAX = 50_000
+const PRICE_STEP = 100
+
+function formatFilterPrice(n: number) {
+  if (n === 0) return '$0'
+  return `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+}
+
+function PriceRangeSlider({
+  lo,
+  hi,
+  onLo,
+  onHi,
+}: {
+  lo: number
+  hi: number
+  onLo: (n: number) => void
+  onHi: (n: number) => void
+}) {
+  const trackRef = useRef<HTMLDivElement>(null)
+  const drag = useRef<'lo' | 'hi' | null>(null)
+  const loRef = useRef(lo)
+  const hiRef = useRef(hi)
+  loRef.current = lo
+  hiRef.current = hi
+
+  const span = PRICE_MAX - PRICE_MIN
+  const thumbLeft = (v: number) => `calc((100% - 8px) * ${(v - PRICE_MIN) / span})`
+
+  const valueFromX = (clientX: number) => {
+    const el = trackRef.current
+    if (!el) return PRICE_MIN
+    const rect = el.getBoundingClientRect()
+    const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width))
+    const raw = PRICE_MIN + ratio * span
+    return Math.round(raw / PRICE_STEP) * PRICE_STEP
+  }
+
+  useEffect(() => {
+    const move = (clientX: number) => {
+      if (!drag.current) return
+      const v = valueFromX(clientX)
+      if (drag.current === 'lo') onLo(Math.min(v, hiRef.current))
+      else onHi(Math.max(v, loRef.current))
+    }
+    const onPointerMove = (e: PointerEvent) => move(e.clientX)
+    const onMouseMove = (e: MouseEvent) => move(e.clientX)
+    const up = () => {
+      drag.current = null
+    }
+    window.addEventListener('pointermove', onPointerMove)
+    window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('pointerup', up)
+    window.addEventListener('mouseup', up)
+    return () => {
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('pointerup', up)
+      window.removeEventListener('mouseup', up)
+    }
+  }, [onHi, onLo])
+
+  const startDrag = (which: 'lo' | 'hi') => (e: React.PointerEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    drag.current = which
+    e.currentTarget.setPointerCapture(e.pointerId)
+  }
+
+  const onTrackPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.target !== e.currentTarget && !(e.target as HTMLElement).dataset.track) return
+    const v = valueFromX(e.clientX)
+    const mid = (lo + hi) / 2
+    if (v <= mid) {
+      drag.current = 'lo'
+      onLo(Math.min(v, hi))
+    } else {
+      drag.current = 'hi'
+      onHi(Math.max(v, lo))
+    }
+  }
+
+  const knobClass =
+    'absolute top-9 z-[1] flex size-4 cursor-grab items-center justify-center p-0 active:cursor-grabbing'
+
+  return (
+    <div className="relative h-12 w-full max-w-[272px] select-none">
+      <div
+        ref={trackRef}
+        data-track="true"
+        className="absolute top-9 right-0 left-0 h-4 cursor-pointer"
+        onPointerDown={onTrackPointerDown}
+      >
+        <div data-track="true" className="absolute top-[7px] right-0 left-0 h-0.5 rounded-full bg-[#f4f4f4]">
+          <div
+            data-track="true"
+            className="absolute top-0 h-0.5 rounded-full bg-[#060709]"
+            style={{
+              left: `${((lo - PRICE_MIN) / span) * 100}%`,
+              width: `${((hi - lo) / span) * 100}%`,
+            }}
+          />
+        </div>
+      </div>
+
+      <div
+        className="pointer-events-none absolute top-0 flex flex-col items-start gap-3"
+        style={{ left: thumbLeft(lo) }}
+      >
+        <span className="inline-flex h-7 items-center rounded-full bg-[#f4f4f4] px-2.5 text-[12px] leading-[1.5] text-[#060709]">
+          {formatFilterPrice(lo)}
+        </span>
+      </div>
+      <div
+        className="pointer-events-none absolute top-0 flex flex-col items-end gap-3"
+        style={{ left: thumbLeft(hi), transform: 'translateX(calc(-100% + 8px))' }}
+      >
+        <span className="inline-flex h-7 items-center rounded-full bg-[#f4f4f4] px-2.5 text-[12px] leading-[1.5] whitespace-nowrap text-[#060709]">
+          {formatFilterPrice(hi)}
+        </span>
+      </div>
+
+      <button
+        type="button"
+        aria-label="Minimum price"
+        className={cn(knobClass, 'z-[1]')}
+        style={{ left: thumbLeft(lo), marginLeft: '-4px' }}
+        onPointerDown={startDrag('lo')}
+      >
+        <span className="size-2 rounded-full border-2 border-solid border-[#1a1e26] bg-white shadow-[0px_4px_8px_rgba(0,0,0,0.1)]" />
+      </button>
+      <button
+        type="button"
+        aria-label="Maximum price"
+        className={cn(knobClass, 'z-[2]')}
+        style={{ left: thumbLeft(hi), marginLeft: '-4px' }}
+        onPointerDown={startDrag('hi')}
+      >
+        <span className="size-2 rounded-full border-2 border-solid border-[#1a1e26] bg-white shadow-[0px_4px_8px_rgba(0,0,0,0.1)]" />
+      </button>
+    </div>
+  )
+}
+
 export type CategoryFilterState = {
   category: string | null
   condition: string
+  minPrice: number
   maxPrice: number
   reviews: number[]
 }
@@ -95,7 +241,8 @@ export type CategoryFilterState = {
 export const DEFAULT_CATEGORY_FILTERS: CategoryFilterState = {
   category: null,
   condition: 'Review Count',
-  maxPrice: 50000,
+  minPrice: PRICE_MIN,
+  maxPrice: PRICE_MAX,
   reviews: [],
 }
 
@@ -108,9 +255,10 @@ export function CategoryFilters({
   value: CategoryFilterState
   onChange: (next: CategoryFilterState) => void
   onClear: () => void
-  onApplyPrice: (maxPrice: number) => void
+  onApplyPrice: (range: { minPrice: number; maxPrice: number }) => void
 }) {
   const [open, setOpen] = useState<Record<string, boolean>>({ Condition: true })
+  const [draftMin, setDraftMin] = useState(value.minPrice)
   const [draftMax, setDraftMax] = useState(value.maxPrice)
 
   const toggleAccordion = (key: string) => {
@@ -148,38 +296,18 @@ export function CategoryFilters({
       </Section>
 
       <Section className="pt-5">
-        <h2 className="text-[16px] font-medium leading-[1.5] text-[#060709]">Filter by Price</h2>
-        <div className="mt-5">
-          <div className="relative h-12 w-full max-w-[272px]">
-            <div className="absolute bottom-[3px] left-0 right-0 h-0.5 rounded-full bg-[#f4f4f4]">
-              <div className="h-full rounded-full bg-[#060709]" style={{ width: `${(draftMax / 50000) * 100}%` }} />
-            </div>
-            <div className="flex justify-between">
-              <span className="inline-flex h-7 items-center rounded-full bg-[#f4f4f4] px-2.5 text-[12px] leading-[1.5] text-[#1a1e26]">
-                $0
-              </span>
-              <span className="inline-flex h-7 items-center rounded-full bg-[#f4f4f4] px-2.5 text-[12px] leading-[1.5] text-[#1a1e26]">
-                ${draftMax.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
-            </div>
-            <input
-              type="range"
-              min={0}
-              max={50000}
-              step={100}
-              value={draftMax}
-              onChange={(e) => setDraftMax(Number(e.target.value))}
-              className="absolute bottom-0 left-0 w-full cursor-pointer accent-[#060709]"
-              aria-label="Maximum price"
-            />
-          </div>
+        <h2 className="text-[20px] font-semibold leading-[1.2] tracking-[-1.5px] text-[#1a1e26]">
+          Filter by Price
+        </h2>
+        <div className="mt-5 flex flex-col gap-6">
+          <PriceRangeSlider lo={draftMin} hi={draftMax} onLo={setDraftMin} onHi={setDraftMax} />
           <button
             type="button"
             onClick={() => {
-              onChange({ ...value, maxPrice: draftMax })
-              onApplyPrice(draftMax)
+              onChange({ ...value, minPrice: draftMin, maxPrice: draftMax })
+              onApplyPrice({ minPrice: draftMin, maxPrice: draftMax })
             }}
-            className="mt-6 inline-flex h-10 w-[103px] items-center justify-center rounded-full bg-[#480516] text-[14px] font-medium leading-[1.5] text-white"
+            className="inline-flex h-10 w-[103px] items-center justify-center rounded-full bg-[#480516] px-8 text-[14px] font-normal leading-[1.5] text-white"
           >
             Apply
           </button>
@@ -268,7 +396,8 @@ export function CategoryFilters({
       <button
         type="button"
         onClick={() => {
-          setDraftMax(50000)
+          setDraftMin(PRICE_MIN)
+          setDraftMax(PRICE_MAX)
           onClear()
         }}
         className="mt-5 inline-flex h-10 w-fit items-center justify-center rounded-full bg-[#dacdd0] px-8 text-[14px] font-normal leading-[1.5] text-[#480516]"

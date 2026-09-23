@@ -3,7 +3,29 @@ import { Outlet } from 'react-router-dom'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
 import { ToastHost } from '@/components/shared/ToastHost'
+import { adminLogo } from '@/assets/admin'
 import { cn } from '@/utils/format'
+
+export function AdminAuthLayout() {
+  return (
+    <div className="flex min-h-screen flex-col bg-slate-50">
+      <header className="border-b border-slate-200 bg-maroon-950 px-5 py-4">
+        <div className="mx-auto flex w-full max-w-[440px] items-center gap-2.5">
+          <div className="h-7 w-[41px] shrink-0 overflow-hidden">
+            <img src={adminLogo} alt="VSK" className="h-7 w-[41px] object-cover" />
+          </div>
+          <p className="text-[13px] text-slate-400">Admin</p>
+        </div>
+      </header>
+      <div className="flex flex-1 items-center justify-center px-4 py-10 sm:px-6">
+        <div className="w-full max-w-[440px] animate-slide-up">
+          <Outlet />
+        </div>
+      </div>
+      <ToastHost />
+    </div>
+  )
+}
 
 export function AdminLayout() {
   const [navOpen, setNavOpen] = useState(false)
@@ -38,7 +60,10 @@ export function AdminLayout() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <AdminTopBar onMenu={() => setNavOpen(true)} />
-        <main className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-4 sm:p-5 lg:p-6">
+        <main
+          id="admin-main"
+          className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 px-3.5 py-3.5 sm:p-5 lg:p-6"
+        >
           <Outlet />
         </main>
       </div>

@@ -48,10 +48,10 @@ export function OpenDisputeForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="rounded-2xl border border-border bg-white p-[21px]">
-      <h2 className="text-[14px] font-semibold text-[#1a1e26]">Open a new dispute</h2>
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <Field label="Related order">
+    <form onSubmit={onSubmit} className="rounded-2xl border border-[#ebebec] bg-white p-5">
+      <h2 className="text-[14px] font-semibold leading-5 text-[#1a1e26]">Open a new dispute</h2>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 sm:gap-4">
+        <Field label="Related order" className="text-[12px] [&_span]:font-medium [&_span]:text-[#46494f]">
           <Input
             list="dispute-order-ids"
             value={orderId}
@@ -61,6 +61,7 @@ export function OpenDisputeForm() {
             }}
             placeholder="e.g. ORD-3402"
             required
+            className="h-[42px] rounded-xl px-3.5 text-[14px]"
           />
           <datalist id="dispute-order-ids">
             {orders.map((order: Order) => (
@@ -68,30 +69,36 @@ export function OpenDisputeForm() {
             ))}
           </datalist>
         </Field>
-        <Field label="Dispute reason">
+        <Field label="Dispute reason" className="text-[12px] [&_span]:font-medium [&_span]:text-[#46494f]">
           <Input
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="e.g. Item not as described"
             required
+            className="h-[42px] rounded-xl px-3.5 text-[14px]"
           />
         </Field>
       </div>
-      <Field label="Describe the issue" className="mt-4">
+      <Field label="Describe the issue" className="mt-5 text-[12px] [&_span]:font-medium [&_span]:text-[#46494f]">
         <Textarea
           value={details}
           onChange={(e) => setDetails(e.target.value)}
           placeholder="Provide as much detail as possible…"
-          className="min-h-[86px]"
+          className="min-h-[86px] rounded-xl px-3.5 py-3 text-[14px]"
           required
         />
       </Field>
       {error ? <p className="mt-2 text-[13px] text-accent-red">{error}</p> : null}
-      <div className="mt-4 flex gap-2">
-        <Button type="submit" className="h-[42px] px-6">
+      <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+        <Button type="submit" className="h-[42px] px-6 text-[14px] font-semibold !bg-[#480516]">
           Submit dispute
         </Button>
-        <Button type="button" variant="secondary" className="h-[42px]" onClick={reset}>
+        <Button
+          type="button"
+          variant="secondary"
+          className="h-[42px] px-6 text-[14px] font-medium text-[#7a7b7c]"
+          onClick={reset}
+        >
           Cancel
         </Button>
       </div>

@@ -1,11 +1,12 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
-import { AppLayout, AuthLayout, RootError } from '@/layouts/AppLayout'
-import { AdminLayout } from '@/layouts/AdminLayout'
-import { AuthGuard, GuestGuard, AdminGuard } from '@/components/session/Guards'
+import { AppLayout, AuthLayout, RootError, RootLayout } from '@/layouts/AppLayout'
+import { AdminLayout, AdminAuthLayout } from '@/layouts/AdminLayout'
+import { AuthGuard, GuestGuard, AdminGuard, AdminGuestGuard } from '@/components/session/Guards'
 import { HomePage } from '@/pages/HomePage'
 import { CategoryPage } from '@/pages/CategoryPage'
 import { LotDetailPage } from '@/pages/LotDetailPage'
 import { LoginPage, SignupPage } from '@/pages/AuthPages'
+import { ReferralLinkPage } from '@/pages/ReferralLinkPage'
 import { BidsPage } from '@/pages/BidsPage'
 import { WatchlistPage } from '@/pages/WatchlistPage'
 import { WalletPage } from '@/pages/WalletPage'
@@ -21,12 +22,14 @@ import { VerificationPage } from '@/pages/VerificationPage'
 import { ReferralsPage } from '@/pages/ReferralsPage'
 import { PrivacyPage, TermsPage } from '@/pages/LegalPages'
 import { AdminOverviewPage } from '@/pages/admin/AdminOverviewPage'
+import { AdminLoginPage } from '@/pages/admin/AdminLoginPage'
 import { AdminAnalyticsPage } from '@/pages/admin/AdminAnalyticsPage'
 import { AdminVerificationDetailPage, AdminVerificationPage } from '@/pages/admin/AdminVerificationPages'
 import {
   AdminProxyDetailPage,
   AdminProxyPage,
   AdminSettlementDetailPage,
+  AdminSettlementReconciliationPage,
   AdminSettlementsPage,
   AdminSupportQueuePage,
   AdminTicketDetailPage,
@@ -57,8 +60,10 @@ import {
   AdminAuditDetailPage,
   AdminAuditPage,
   AdminFeesPage,
+  AdminReferralConfigPage,
   AdminReferralDetailPage,
   AdminReferralsPage,
+  AdminRewardsQueuePage,
   AdminSyncDetailPage,
   AdminSyncPage,
   AdminTiersPage,
@@ -69,9 +74,12 @@ import {
 
 export const router = createBrowserRouter([
   {
+    element: <RootLayout />,
+    errorElement: <RootError />,
+    children: [
+  {
     path: '/',
     element: <AppLayout />,
-    errorElement: <RootError />,
     children: [
       { index: true, element: <HomePage /> },
       { path: 'categories/:slug', element: <CategoryPage /> },
@@ -99,18 +107,29 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    element: <AdminGuard />,
-    errorElement: <RootError />,
+    path: 'admin',
     children: [
       {
-        path: 'admin',
-        element: <AdminLayout />,
+        element: <AdminGuestGuard />,
         children: [
+          {
+            element: <AdminAuthLayout />,
+            children: [{ path: 'login', element: <AdminLoginPage /> }],
+          },
+        ],
+      },
+      {
+        element: <AdminGuard />,
+        children: [
+          {
+            element: <AdminLayout />,
+            children: [
           { index: true, element: <AdminOverviewPage /> },
           { path: 'analytics', element: <AdminAnalyticsPage /> },
           { path: 'verification', element: <AdminVerificationPage /> },
           { path: 'verification/:id', element: <AdminVerificationDetailPage /> },
           { path: 'settlements', element: <AdminSettlementsPage /> },
+          { path: 'settlements/reconciliation', element: <AdminSettlementReconciliationPage /> },
           { path: 'settlements/:id', element: <AdminSettlementDetailPage /> },
           { path: 'proxy-placement', element: <AdminProxyPage /> },
           { path: 'proxy-placement/:id', element: <AdminProxyDetailPage /> },
@@ -135,6 +154,8 @@ export const router = createBrowserRouter([
           { path: 'transactions', element: <AdminTransactionsPage /> },
           { path: 'transactions/:id', element: <AdminTransactionDetailPage /> },
           { path: 'referrals', element: <AdminReferralsPage /> },
+          { path: 'referrals/queue', element: <AdminRewardsQueuePage /> },
+          { path: 'referrals/config', element: <AdminReferralConfigPage /> },
           { path: 'referrals/:id', element: <AdminReferralDetailPage /> },
           { path: 'fees', element: <AdminFeesPage /> },
           { path: 'tiers', element: <AdminTiersPage /> },
@@ -146,14 +167,16 @@ export const router = createBrowserRouter([
           { path: 'users/new', element: <AdminUserFormPage /> },
           { path: 'users/:id', element: <AdminUserDetailPage /> },
           { path: 'users/:id/edit', element: <AdminUserFormPage /> },
+            ],
+          },
         ],
       },
     ],
   },
   {
     element: <GuestGuard />,
-    errorElement: <RootError />,
     children: [
+      { path: 'ref/:code', element: <ReferralLinkPage /> },
       {
         element: <AuthLayout />,
         children: [
@@ -164,4 +187,6 @@ export const router = createBrowserRouter([
     ],
   },
   { path: '*', element: <Navigate to="/" replace /> },
+    ],
+  },
 ])

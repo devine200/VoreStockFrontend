@@ -1,13 +1,11 @@
-import logo from '@/assets/images/logo.png'
+import { OnboardingLogo } from '@/components/onboarding/OnboardingShell'
 import { Button } from '@/components/shared/Button'
 
 export function WelcomeStep({ onContinue }: { onContinue: () => void }) {
   return (
     <div className="flex flex-col items-center text-center">
-      <div className="relative h-10 w-[59px] overflow-hidden">
-        <img src={logo} alt="VSK Global" className="h-full w-auto object-contain" />
-      </div>
-      <h1 className="mt-8 text-[28px] font-semibold leading-9 tracking-tight text-[#1a1e26]">
+      <OnboardingLogo className="h-[140px] w-[212px]" />
+      <h1 className="mt-8 text-[32px] font-semibold leading-10 tracking-tight text-[#1a1e26]">
         Welcome to the marketplace
       </h1>
       <p className="mt-3 max-w-[448px] text-[14px] leading-[26px] text-[#7a7b7c]">

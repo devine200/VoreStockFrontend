@@ -1,6 +1,6 @@
-import { useState, type ReactNode } from 'react'
+import { useLayoutEffect, useState, type ReactNode } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Button } from '@/components/shared/Button'
-import { PageHeader } from '@/components/shared/PageChrome'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { updatePrefs } from '@/store/slices/accountSlices'
 import { showSuccess } from '@/store/slices/uiSlice'
@@ -61,7 +61,7 @@ function Chip({
       disabled={locked}
       onClick={onClick}
       className={cn(
-        'inline-flex h-9 items-center gap-1.5 rounded-full px-3.5 text-[13px] font-medium transition',
+        'inline-flex h-[30px] items-center gap-1.5 rounded-full px-3.5 text-[13px] font-medium transition',
         selected
           ? 'border border-[#480516] bg-[#f9f5f6] text-[#480516]'
           : 'border border-transparent bg-[#f3f4f6] text-[#4b5563] hover:bg-[#ebebec]',
@@ -91,14 +91,14 @@ function Toggle({
       aria-label={label}
       onClick={() => onChange(!checked)}
       className={cn(
-        'relative h-6 w-11 shrink-0 rounded-full transition',
+        'relative h-5 w-9 shrink-0 rounded-full transition',
         checked ? 'bg-[#480516]' : 'bg-[#d1d5db]',
       )}
     >
       <span
         className={cn(
-          'absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition',
-          checked && 'translate-x-5',
+          'absolute top-0.5 left-0.5 size-4 rounded-full bg-white shadow transition',
+          checked && 'translate-x-4',
         )}
       />
     </button>
@@ -106,12 +106,14 @@ function Toggle({
 }
 
 function SectionCard({
+  id,
   title,
   subtitle,
   editing,
   onEdit,
   children,
 }: {
+  id?: string
   title: string
   subtitle: string
   editing?: boolean
@@ -119,14 +121,14 @@ function SectionCard({
   children: ReactNode
 }) {
   return (
-    <section className="rounded-xl border border-[#ebebec] bg-white p-5 sm:p-6">
+    <section id={id} className="scroll-mt-28 overflow-hidden rounded-2xl border border-[#ebebec] bg-white p-5 sm:p-6">
       <div className="flex items-start justify-between gap-3">
-        <div>
-          <h2 className="text-[16px] font-semibold text-[#1a1e26]">{title}</h2>
-          <p className="mt-1 text-[13px] text-[#9ca3af]">{subtitle}</p>
+        <div className="min-w-0">
+          <h2 className="text-[16px] font-semibold leading-6 text-[#1a1e26]">{title}</h2>
+          <p className="mt-0.5 text-[13px] leading-4 text-[#9ca3af]">{subtitle}</p>
         </div>
         {onEdit ? (
-          <Button type="button" size="sm" variant="soft" onClick={onEdit}>
+          <Button type="button" variant="soft" className="h-10 w-[74px] shrink-0 px-0 text-[13px]" onClick={onEdit}>
             {editing ? 'Done' : 'Edit'}
           </Button>
         ) : null}
@@ -139,6 +141,9 @@ function SectionCard({
 function FieldLabel({ children }: { children: ReactNode }) {
   return <p className="mb-2 text-[13px] font-medium text-[#1a1e26]">{children}</p>
 }
+
+const inputClass =
+  'h-[42px] w-full rounded-xl border border-[#ebebec] bg-white px-3 text-[14px] outline-none focus:border-[#480516] disabled:bg-[#f9fafb]'
 
 export function PreferencesPage() {
   const dispatch = useAppDispatch()
@@ -158,9 +163,18 @@ export function PreferencesPage() {
   const [savedSearchAlerts, setSavedSearchAlerts] = useState(prefs.savedSearchAlerts ?? true)
   const [newListingAlerts, setNewListingAlerts] = useState(prefs.newListingAlerts ?? true)
 
+  const location = useLocation()
   const [editProduct, setEditProduct] = useState(true)
   const [editBidding, setEditBidding] = useState(true)
   const [editLocation, setEditLocation] = useState(true)
+
+  useLayoutEffect(() => {
+    if (location.hash !== '#location') return
+    setEditLocation(true)
+    requestAnimationFrame(() => {
+      document.getElementById('location')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+  }, [location.hash])
 
   const save = () => {
     dispatch(
@@ -190,12 +204,20 @@ export function PreferencesPage() {
   }
 
   return (
-    <div className="animate-fade-in space-y-6">
-      <PageHeader
-        title="Buying Preferences"
-        subtitle="Personalise your marketplace experience and improve recommendations"
-        actions={<Button onClick={save}>Save preferences</Button>}
-      />
+    <div className="animate-fade-in min-w-0 space-y-6">
+      <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <Button onClick={save} className="h-10 w-full shrink-0 sm:order-2 sm:w-auto">
+          Save preferences
+        </Button>
+        <div className="min-w-0 sm:order-1">
+          <h1 className="text-[24px] font-semibold leading-8 tracking-[-0.5px] text-[#1a1e26]">
+            Buying Preferences
+          </h1>
+          <p className="pt-1 text-[14px] leading-5 text-[#7a7b7c]">
+            Personalise your marketplace experience and improve recommendations
+          </p>
+        </div>
+      </div>
 
       <SectionCard
         title="Product preferences"
@@ -248,23 +270,22 @@ export function PreferencesPage() {
           </div>
           <div>
             <FieldLabel>Preferred price range</FieldLabel>
-            <div className="flex max-w-md items-center gap-2">
+            <div className="grid max-w-md grid-cols-2 items-center gap-2">
               <input
                 type="number"
                 disabled={!editProduct}
                 value={priceMin}
                 onChange={(e) => setPriceMin(e.target.value)}
                 placeholder="$ Min"
-                className="h-11 w-full rounded-xl border border-[#ebebec] bg-white px-3 text-[14px] outline-none focus:border-[#480516] disabled:bg-[#f9fafb]"
+                className={inputClass}
               />
-              <span className="text-[#9ca3af]">—</span>
               <input
                 type="number"
                 disabled={!editProduct}
                 value={priceMax}
                 onChange={(e) => setPriceMax(e.target.value)}
                 placeholder="$ Max"
-                className="h-11 w-full rounded-xl border border-[#ebebec] bg-white px-3 text-[14px] outline-none focus:border-[#480516] disabled:bg-[#f9fafb]"
+                className={inputClass}
               />
             </div>
           </div>
@@ -294,23 +315,22 @@ export function PreferencesPage() {
           </div>
           <div>
             <FieldLabel>Preferred bid range</FieldLabel>
-            <div className="flex max-w-md items-center gap-2">
+            <div className="grid max-w-md grid-cols-2 items-center gap-2">
               <input
                 type="number"
                 disabled={!editBidding}
                 value={bidMin}
                 onChange={(e) => setBidMin(e.target.value)}
                 placeholder="$ Min"
-                className="h-11 w-full rounded-xl border border-[#ebebec] bg-white px-3 text-[14px] outline-none focus:border-[#480516] disabled:bg-[#f9fafb]"
+                className={inputClass}
               />
-              <span className="text-[#9ca3af]">—</span>
               <input
                 type="number"
                 disabled={!editBidding}
                 value={bidMax}
                 onChange={(e) => setBidMax(e.target.value)}
                 placeholder="$ Max"
-                className="h-11 w-full rounded-xl border border-[#ebebec] bg-white px-3 text-[14px] outline-none focus:border-[#480516] disabled:bg-[#f9fafb]"
+                className={inputClass}
               />
             </div>
           </div>
@@ -318,6 +338,7 @@ export function PreferencesPage() {
       </SectionCard>
 
       <SectionCard
+        id="location"
         title="Location & delivery"
         subtitle="Affects landed cost estimates and available lots."
         editing={editLocation}
@@ -330,7 +351,7 @@ export function PreferencesPage() {
               disabled={!editLocation}
               value={deliveryCountry}
               onChange={(e) => setDeliveryCountry(e.target.value)}
-              className="h-11 w-full rounded-xl border border-[#ebebec] bg-white px-3 text-[14px] outline-none focus:border-[#480516] disabled:bg-[#f9fafb]"
+              className={inputClass}
             />
           </div>
           <div>

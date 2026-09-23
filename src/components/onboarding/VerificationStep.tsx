@@ -23,6 +23,7 @@ export function VerificationStep({
 }) {
   const dispatch = useAppDispatch()
   const { emailVerified, phoneCodeSent, documentUploaded } = useAppSelector((s) => s.onboarding)
+  const authProvider = useAppSelector((s) => s.session.user?.authProvider)
   const [code, setCode] = useState('')
 
   const verifyEmail = () => {
@@ -59,7 +60,11 @@ export function VerificationStep({
               <div>
                 <p className="text-[14px] font-semibold leading-5 text-[#1a1e26]">Email verification</p>
                 <p className="text-[12px] leading-4 text-[#7a7b7c]">
-                  {emailVerified ? 'Verified successfully.' : 'Check your inbox for a verification code.'}
+                  {emailVerified
+                    ? authProvider === 'google'
+                      ? 'Verified with Google.'
+                      : 'Verified successfully.'
+                    : 'Check your inbox for a verification code.'}
                 </p>
               </div>
             </div>

@@ -1,10 +1,12 @@
 import { cn } from '@/utils/format'
+import { Icon } from '@/components/shared/Icon'
+import { icons } from '@/assets'
 import type { DisputeEvent } from '@/types'
 
 function ActorIcon({ actor }: { actor: DisputeEvent['actor'] }) {
   if (actor === 'you') {
     return (
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-wine-500 text-[10px] font-semibold text-white">
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#480516] text-[10px] font-semibold text-white">
         You
       </span>
     )
@@ -39,14 +41,27 @@ export function DisputeActivity({ events }: { events: DisputeEvent[] }) {
   return (
     <ol className="space-y-4">
       {events.map((event, i) => (
-        <li key={`${event.title}-${i}`} className="flex gap-3">
+        <li key={`${event.title}-${event.at}-${i}`} className="flex gap-3">
           <ActorIcon actor={event.actor} />
           <div className="min-w-0 flex-1">
             <p className="flex flex-wrap items-baseline gap-x-2 text-[13px]">
               <span className="font-semibold text-[#1a1e26]">{event.title}</span>
               <span className="text-[12px] text-[#9ca3af]">{event.at}</span>
             </p>
-            <p className={cn('mt-0.5 text-[13px] leading-5 text-[#7a7b7c]')}>{event.body}</p>
+            <p className={cn('mt-0.5 whitespace-pre-wrap text-[13px] leading-5 text-[#7a7b7c]')}>{event.body}</p>
+            {event.attachments?.length ? (
+              <ul className="mt-2 flex flex-wrap gap-1.5">
+                {event.attachments.map((name) => (
+                  <li
+                    key={name}
+                    className="inline-flex max-w-full items-center gap-1 rounded-lg bg-[#f8f8f9] px-2 py-1 text-[11px] text-[#46494f]"
+                  >
+                    <Icon src={icons.fileText} size={12} />
+                    <span className="min-w-0 truncate">{name}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </div>
         </li>
       ))}

@@ -1,6 +1,6 @@
 import { cn } from '@/utils/format'
 
-export type TimelineVariant = 'done' | 'current' | 'pending' | 'failed'
+export type TimelineVariant = 'done' | 'current' | 'pending' | 'failed' | 'muted'
 
 export interface TimelineItem {
   title: string
@@ -14,7 +14,9 @@ type StatusKind = 'success' | 'warning' | 'danger' | 'neutral' | 'info'
 
 function statusKind(status: string): StatusKind {
   const s = status.toLowerCase()
-  if (/(approved|verified|completed|rewarded|qualified|live|delivered|credited|active|published|winning)/.test(s)) {
+  if (s === 'approved') return 'info'
+  if (s === 'live' || s === 'active') return 'info'
+  if (/(verified|completed|rewarded|qualified|delivered|credited|published|winning|won)/.test(s)) {
     return 'success'
   }
   if (/(pending|approaching|hold|upcoming|in transit|customs|progress|awaiting)/.test(s)) {
@@ -23,7 +25,7 @@ function statusKind(status: string): StatusKind {
   if (/(reject|fail|default|urgent|overdue|suspend|deactivat|blacklist|breach|outbid)/.test(s)) {
     return 'danger'
   }
-  if (/(processing|resubmission|locked|tier|restricted|info)/.test(s)) {
+  if (/(processing|resubmission|locked|tier|restricted|info|approved)/.test(s)) {
     return 'info'
   }
   return 'neutral'
@@ -58,6 +60,7 @@ function inferVariant(item: TimelineItem, index: number, total: number): Timelin
   const kind = item.status ? statusKind(item.status) : 'neutral'
 
   if (kind === 'danger') return 'failed'
+  if (/resubmission/i.test(item.status ?? '')) return 'muted'
   if (isLast && (kind === 'warning' || /pending|hold|awaiting|progress/i.test(item.status ?? ''))) {
     return 'current'
   }
@@ -71,6 +74,7 @@ const dotStyles: Record<TimelineVariant, string> = {
   current: 'bg-amber-500',
   pending: 'bg-slate-300',
   failed: 'bg-red-500',
+  muted: 'bg-slate-800',
 }
 
 function TimelineDot({ variant, showConnector }: { variant: TimelineVariant; showConnector: boolean }) {

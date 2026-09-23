@@ -236,7 +236,7 @@ export const INITIAL_BIDS = [
   { id: 'b1', lotId: 'lot-1', amount: 2500, status: 'leading' as const, placedAt: daysFromNow(-1), maxBid: 3200 },
   { id: 'b2', lotId: 'lot-2', amount: 2400, status: 'outbid' as const, placedAt: daysFromNow(-2), maxBid: 2500 },
   { id: 'b3', lotId: 'lot-3', amount: 64500, status: 'leading' as const, placedAt: daysFromNow(-0.5), maxBid: 70000 },
-  { id: 'b4', lotId: 'lot-6', amount: 38500, status: 'outbid' as const, placedAt: daysFromNow(-1), maxBid: 40000 },
+  { id: 'b4', lotId: 'lot-6', amount: 39100, status: 'outbid' as const, placedAt: daysFromNow(-1), maxBid: 39100 },
   {
     id: 'b5',
     lotId: 'lot-4',
@@ -369,6 +369,7 @@ export const INITIAL_ORDERS: Order[] = [
     progress: 57,
     checkpointDone: 4,
     checkpointTotal: 7,
+    imei: '36E173617623811273',
     steps: [
       { label: 'Auction Won & Deposit Secured', done: true, at: '18 Jul' },
       { label: 'Balance Payment Settled', done: true, at: '18 Jul' },
@@ -550,7 +551,7 @@ export const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     createdAt: minutesFromNow(-6),
     type: 'bid',
     actionLabel: 'Bid again →',
-    actionTo: '/lots/lot-6',
+    actionTo: '/lots/actros-1845',
   },
   {
     id: 'n2',
@@ -580,7 +581,7 @@ export const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     createdAt: hoursFromNow(-5),
     type: 'auction',
     actionLabel: 'View lot →',
-    actionTo: '/lots/lot-1',
+    actionTo: '/lots/watermelon-zkittles-deal',
   },
   {
     id: 'n5',
@@ -600,7 +601,7 @@ export const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     createdAt: daysFromNow(-1),
     type: 'bid',
     actionLabel: 'View lot →',
-    actionTo: '/lots/lot-3',
+    actionTo: '/lots/cat-320d-excavator',
   },
   {
     id: 'n7',
@@ -628,7 +629,7 @@ export const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     createdAt: daysFromNow(-5),
     type: 'auction',
     actionLabel: 'Bid now →',
-    actionTo: '/lots/lot-4',
+    actionTo: '/lots/iphone-13-pallet',
   },
 ]
 
@@ -756,7 +757,7 @@ export const INITIAL_CONTRACTS: Contract[] = [
         signedAt: daysFromNow(-29),
       },
       {
-        name: 'ClearWater Heavy Plant',
+        name: 'Costco Wholesale',
         role: 'Seller',
         initials: 'CW',
         signed: true,
@@ -764,28 +765,27 @@ export const INITIAL_CONTRACTS: Contract[] = [
       },
     ],
     terms: [
-      'Purchase price of $74,200 is payable within 48 hours of contract activation.',
-      'Title transfers to buyer upon cleared settlement and escrow release.',
-      'Seller warrants the lot matches the published manifest within stated variances.',
-      'Jurisdiction: Nigeria · Disputes follow VSK Global arbitration rules.',
+      'Purchase price of $74,200 to be held in escrow until delivery confirmation.',
+      'Seller guarantees item matches the lot listing description.',
+      'Buyer has 7 days post-delivery to raise a dispute.',
+      'Jurisdiction: Nigeria. Governing law: CISG.',
     ],
     documents: [
       { name: 'Purchase-Agreement-CNT-2024-0441.pdf', size: '284 KB' },
-      { name: 'Lot-Manifest-LOT-4703.pdf', size: '128 KB' },
-      { name: 'Escrow-Release-Instructions.pdf', size: '96 KB' },
+      { name: 'Inspection-Report.pdf', size: '1.2 MB' },
     ],
     activity: [
-      { label: 'Contract created from won auction ORD-3391', at: daysFromNow(-30) },
-      { label: 'Buyer signed — Northbridge Trading Ltd', at: daysFromNow(-29) },
+      { label: 'Contract created and sent for signature', at: daysFromNow(-30) },
+      { label: 'Buyer signed', at: daysFromNow(-29) },
       { label: 'Seller signed — contract active', at: daysFromNow(-28) },
     ],
   },
   {
     id: 'c2',
-    contractNumber: 'CNT-2024-0512',
+    contractNumber: 'CNT-2024-0412',
     orderId: 'ORD-3402',
     lotId: 'lot-6',
-    title: 'Purchase Agreement — Mercedes-Benz Actros 1845',
+    title: 'Framework Sourcing Agreement',
     status: 'awaiting_signature',
     counterparty: 'Fleet Auctions EU',
     updatedAt: daysFromNow(-1),
@@ -824,10 +824,10 @@ export const INITIAL_CONTRACTS: Contract[] = [
   },
   {
     id: 'c3',
-    contractNumber: 'CNT-2024-0388',
+    contractNumber: 'CNT-2024-0398',
     orderId: 'ORD-3288',
     lotId: 'lot-5',
-    title: 'Purchase Agreement — Generator Set 500kVA Perkins',
+    title: 'Purchase Agreement — Steel Reinforcement Bars',
     status: 'completed',
     counterparty: 'BuildMat Imports',
     updatedAt: daysFromNow(-40),
@@ -870,10 +870,10 @@ export const INITIAL_CONTRACTS: Contract[] = [
   },
   {
     id: 'c4',
-    contractNumber: 'CNT-2024-0601',
-    orderId: 'ORD-3510',
-    lotId: 'lot-1',
-    title: 'Purchase Agreement — Watermelon Zkittles Bundle',
+    contractNumber: 'CNT-2024-0455',
+    orderId: 'ORD-3402',
+    lotId: 'lot-4',
+    title: 'Purchase Agreement — iPhone 14 Pallet',
     status: 'draft',
     counterparty: 'PureCBD Co.',
     updatedAt: daysFromNow(0),
@@ -973,7 +973,7 @@ export const INITIAL_TICKETS: SupportTicket[] = [
 ]
 
 export const REFERRAL_CODE = 'CHUKWU2024'
-export const REFERRAL_LINK = `https://vskglobal/ref/${REFERRAL_CODE}`
+/** Share path: `/ref/:code` and `/signup?ref=:code` both lock this code on registration. */
 export const REFERRAL_CREDIT = 50
 export const REFERRAL_SUMMARY = {
   earned: 150,

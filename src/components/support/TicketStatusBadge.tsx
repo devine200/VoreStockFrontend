@@ -8,9 +8,9 @@ export const TICKET_STATUS_LABEL: Record<TicketStatus, string> = {
 }
 
 const TONE: Record<TicketStatus, string> = {
-  awaiting_you: 'bg-[#fef8e6] text-[#b45309]',
+  awaiting_you: 'bg-[#fff6e5] text-[#b45309]',
   open: 'bg-[#e8f1fb] text-[#1d4ed8]',
-  resolved: 'bg-dock-soft text-dock',
+  resolved: 'bg-[#e8f6ee] text-[#0a6e38]',
 }
 
 export function TicketStatusBadge({ status }: { status: TicketStatus }) {

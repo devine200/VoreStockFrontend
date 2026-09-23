@@ -1,5 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import { DEMO_USER } from '@/api/fixtures'
+import { initialsFromName } from '@/session/googleAuth'
 import type { User, UserRole } from '@/types'
 
 interface SessionState {
@@ -16,18 +17,37 @@ const sessionSlice = createSlice({
   name: 'session',
   initialState,
   reducers: {
-    loginDummy(state, action: PayloadAction<{ email: string; name?: string; role?: UserRole }>) {
+    loginDummy(
+      state,
+      action: PayloadAction<{ email: string; name?: string; role?: UserRole; referredBy?: string }>,
+    ) {
+      const name = action.payload.name || DEMO_USER.name
       state.user = {
         ...DEMO_USER,
         email: action.payload.email || DEMO_USER.email,
-        name: action.payload.name || DEMO_USER.name,
+        name,
         role: action.payload.role || 'user',
-        avatarInitials: (action.payload.name || DEMO_USER.name)
-          .split(' ')
-          .map((p) => p[0])
-          .join('')
-          .slice(0, 2)
-          .toUpperCase(),
+        avatarInitials: initialsFromName(name),
+        referredBy: action.payload.referredBy,
+      }
+    },
+    registerUser(
+      state,
+      action: PayloadAction<{ email: string; name: string; phone?: string; referredBy?: string }>,
+    ) {
+      const name = action.payload.name.trim() || 'New Buyer'
+      state.user = {
+        id: `u-${Date.now()}`,
+        name,
+        email: action.payload.email.trim(),
+        role: 'user',
+        phone: action.payload.phone?.trim() || undefined,
+        tier: 1,
+        kycStatus: 'unverified',
+        kybStatus: 'unverified',
+        avatarInitials: initialsFromName(name),
+        authProvider: 'google',
+        referredBy: action.payload.referredBy,
       }
     },
     logout(state) {
@@ -51,5 +71,5 @@ const sessionSlice = createSlice({
   },
 })
 
-export const { loginDummy, logout, setRole, updateProfile } = sessionSlice.actions
+export const { loginDummy, registerUser, logout, setRole, updateProfile } = sessionSlice.actions
 export default sessionSlice.reducer

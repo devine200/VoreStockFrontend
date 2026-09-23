@@ -7,7 +7,7 @@ import { Icon } from '@/components/shared/Icon'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { setSearchQuery } from '@/store/slices/auctionsSlice'
 import { toggleAccountMenu } from '@/store/slices/uiSlice'
-import { cn, lotDisplayCode } from '@/utils/format'
+import { lotDisplayCode } from '@/utils/format'
 
 function MenuIcon() {
   return (
@@ -33,22 +33,18 @@ export function SiteHeader() {
   const location = useLocation()
   const accountMenuOpen = useAppSelector((s) => s.ui.accountMenuOpen)
   const [query, setQuery] = useState('')
-  const [promoLeft, setPromoLeft] = useState(23 * 3600 + 15 * 60)
   const [navOpen, setNavOpen] = useState(false)
 
   const lotParam = location.pathname.match(/^\/lots\/([^/]+)/)?.[1]
   const lots = useAppSelector((s) => s.auctions.lots)
+  const profile = useAppSelector((s) => s.profile)
   const lot = lotParam
     ? lots.find((l) => l.id === lotParam || l.slug === lotParam) ?? getLot(lotParam)
     : undefined
   const isDetail = Boolean(lotParam)
+  const shippingTo = [profile.city, profile.country].filter(Boolean).join(', ') || 'Wed, GA 30002'
   const isBids = location.pathname === '/bids'
   const showSeoHeader = isDetail || isBids
-
-  useEffect(() => {
-    const id = window.setInterval(() => setPromoLeft((v) => Math.max(0, v - 1)), 1000)
-    return () => window.clearInterval(id)
-  }, [])
 
   useEffect(() => {
     setNavOpen(false)
@@ -67,10 +63,6 @@ export function SiteHeader() {
       document.removeEventListener('keydown', onKey)
     }
   }, [navOpen])
-
-  const h = String(Math.floor(promoLeft / 3600)).padStart(2, '0')
-  const m = String(Math.floor((promoLeft % 3600) / 60)).padStart(2, '0')
-  const sec = String(promoLeft % 60).padStart(2, '0')
 
   const onSearch = (e: FormEvent) => {
     e.preventDefault()
@@ -101,15 +93,6 @@ export function SiteHeader() {
 
   return (
     <header className="bg-white">
-      <div className="flex min-h-[37px] w-full items-center justify-center gap-2 bg-[#480516] px-3 py-1.5 text-[12px] font-normal leading-[1.5] sm:gap-4 sm:px-4 sm:text-[14px]">
-        <p className="truncate text-white/70 sm:whitespace-nowrap">
-          LIMITED OFFER: 30% OFF. Use RABBIT30 at Checkout.
-        </p>
-        <p className="shrink-0 whitespace-nowrap tabular-nums text-white">
-          {h} : {m} : {sec}
-        </p>
-      </div>
-
       <div className="flex h-16 w-full items-center justify-between gap-3 border-b border-solid border-[#f4f4f4] px-4 sm:px-6 lg:h-[78px] lg:px-16">
         <button
           type="button"
@@ -181,25 +164,30 @@ export function SiteHeader() {
             </Link>
             {isBids ? (
               <>
-                <span className="text-[#c8c9cb]">›</span>
+                <Icon src={icons.chevronRight} size={11} />
                 <span className="text-[#1a1e26]">Bids & Auctions</span>
               </>
             ) : (
               <>
-                <span className="text-[#c8c9cb]">›</span>
-                <span>{lot?.brand || lot?.category || 'Lot'}</span>
-                <span className="text-[#c8c9cb]">›</span>
+                <Icon src={icons.chevronRight} size={11} />
+                <Link
+                  to={lot?.categorySlug ? `/categories/${lot.categorySlug}` : '/categories/all'}
+                  className="hover:text-[#1a1e26]"
+                >
+                  {lot?.brand || lot?.category || 'Lot'}
+                </Link>
+                <Icon src={icons.chevronRight} size={11} />
                 <span className="text-[#1a1e26]">{lot ? lotDisplayCode(lot.id) : 'Lot'}</span>
               </>
             )}
           </nav>
           {isDetail ? (
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px]">
-              <Icon src={icons.location} size={13} />
-              <span>Shipping to Wed, GA 30002</span>
-              <button type="button" className="font-medium text-[#480516]">
+              <Icon src={icons.shippingVan} size={13} />
+              <span>Shipping to {shippingTo}</span>
+              <Link to="/profile#address" className="font-medium text-[#480516] hover:underline">
                 Edit
-              </button>
+              </Link>
               <span className="hidden text-[#c8c9cb] sm:inline">·</span>
               <span>Ship time: 9.431 lbs</span>
               <span className="hidden text-[#c8c9cb] sm:inline">·</span>

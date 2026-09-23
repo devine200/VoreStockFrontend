@@ -10,7 +10,6 @@ import {
   prevOnboardingStep,
 } from '@/store/slices/onboardingSlice'
 import { updatePrefs } from '@/store/slices/accountSlices'
-import { showSuccess } from '@/store/slices/uiSlice'
 
 export function OnboardingHost() {
   const dispatch = useAppDispatch()
@@ -26,14 +25,6 @@ export function OnboardingHost() {
       dispatch(updatePrefs({ categories }))
     }
     dispatch(completeOnboarding())
-    dispatch(
-      showSuccess({
-        title: 'Welcome to VSK Global',
-        body: 'Your account is ready. Start browsing verified lots and place your first bid.',
-        actionLabel: 'Browse lots',
-        actionTo: '/',
-      }),
-    )
   }
 
   return (

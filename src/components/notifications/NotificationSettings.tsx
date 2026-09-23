@@ -29,7 +29,7 @@ function Toggle({
       onClick={() => onChange(!checked)}
       className={cn(
         'relative h-5 w-9 shrink-0 rounded-full transition',
-        checked ? 'bg-wine-500' : 'bg-[#d1d5db]',
+        checked ? 'bg-[#480516]' : 'bg-[#d1d5db]',
       )}
     >
       <span
@@ -56,13 +56,13 @@ export function NotificationSettings({
   }, [prefs])
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-border bg-white">
-      <div className="px-5 py-4">
-        <h2 className="text-[16px] font-semibold text-[#1a1e26]">Notification Settings</h2>
+    <section className="min-w-0 overflow-hidden rounded-2xl border border-[#ebebec] bg-white">
+      <div className="px-4 py-4 sm:px-5">
+        <h2 className="text-[16px] font-semibold leading-6 text-[#1a1e26]">Notification Settings</h2>
       </div>
-      <div className="divide-y divide-border border-t border-border">
+      <div className="divide-y divide-[#ebebec] border-t border-[#ebebec]">
         {ROWS.map((row) => (
-          <div key={row.key} className="flex items-center justify-between gap-4 px-5 py-4">
+          <div key={row.key} className="flex min-h-[53px] items-center justify-between gap-4 px-4 py-4 sm:px-5">
             <p className="text-[14px] text-[#1a1e26]">{row.label}</p>
             <Toggle
               label={row.label}
@@ -72,8 +72,8 @@ export function NotificationSettings({
           </div>
         ))}
       </div>
-      <div className="flex justify-end border-t border-border px-5 py-4">
-        <Button type="button" className="h-[52px] px-6" onClick={() => onSave(draft)}>
+      <div className="flex justify-end border-t border-[#ebebec] px-4 py-4 sm:px-5">
+        <Button type="button" className="h-[52px] w-full px-6 sm:w-auto" onClick={() => onSave(draft)}>
           Save preferences
         </Button>
       </div>

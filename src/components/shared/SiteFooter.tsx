@@ -17,9 +17,7 @@ export function SiteFooter() {
         // Home: tall top pad so the UNLOCK CTA can overlap into the dark band
         isHome ? 'pt-[100px] sm:pt-[140px] lg:pt-[160px]' : 'pt-0',
       )}
-      style={{
-        backgroundImage: 'linear-gradient(180deg, #1A1E26 0%, #0E0104 100%)',
-      }}
+      style={{ backgroundImage: 'linear-gradient(180deg in srgb, #1a1e26 0%, #0e0104 100%)' }}
     >
       <div className={cn('mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-0', isHome ? 'pt-0' : 'pt-12 sm:pt-16')}>
         <div className="grid grid-cols-1 gap-10 pb-12 md:grid-cols-[minmax(0,280px)_1fr] md:gap-8 lg:grid-cols-[379px_1fr] lg:pb-16">

@@ -43,27 +43,27 @@ export function AdminOverviewPage() {
   const counts: Record<string, number> = {
     verification: verifications.filter((v) => v.status === 'Pending').length,
     settlements: settlements.filter((s) => s.status === 'Pending' || s.status === 'Overdue').length,
-    proxy: proxies.filter((p) => p.status === 'Active').length,
+    proxy: proxies.filter((p) => p.status === 'Live' || p.status === 'Pending').length,
     withdrawals: withdrawals.filter((w) => w.status === 'Pending').length,
-    tpl: tpl.filter((t) => t.status === 'Pending' || t.status === 'Failed').length,
+    tpl: tpl.filter((t) => t.status === 'Pending Verification' || t.status === 'Failed / Requires Review').length,
     support: tickets.filter((t) => t.status === 'Open').length,
   }
 
   return (
-    <div className="flex w-full max-w-full flex-col gap-5 animate-fade-in">
+    <div className="flex w-full max-w-full flex-col gap-4 animate-fade-in sm:gap-5">
       <AdminPageHead
         title="Overview"
         subtitle="Is the platform healthy, and what needs you right now."
       />
 
-      <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid min-w-0 grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3 xl:grid-cols-4">
         {ADMIN_OVERVIEW_KPIS.map((kpi) => (
           <div
             key={kpi.label}
-            className="relative min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-4 sm:px-[18px]"
+            className="relative min-w-0 rounded-xl border border-slate-200 bg-white px-3.5 py-3.5 sm:px-[18px] sm:py-4"
           >
             {kpi.dot === 'maroon' ? (
-              <span className="absolute right-4 top-4 size-2 rounded-full bg-maroon-600 sm:right-[18px]" />
+              <span className="absolute right-3.5 top-3.5 size-2 rounded-full bg-maroon-600 sm:right-[18px] sm:top-4" />
             ) : null}
             <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">{kpi.label}</p>
             <p className="mt-1 text-[20px] font-semibold leading-[26px] text-slate-900">{kpi.value}</p>
@@ -76,13 +76,13 @@ export function AdminOverviewPage() {
         ))}
       </div>
 
-      <div className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-2">
-        <div className="min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-[18px] sm:px-5">
+      <div className="grid min-w-0 grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-4">
+        <div className="min-w-0 rounded-xl border border-slate-200 bg-white px-3.5 py-4 sm:px-5 sm:py-[18px]">
           <div className="mb-3 flex items-center gap-2">
             <span className="size-2 rounded-full bg-amber-500" />
             <p className="text-[14px] font-semibold text-slate-800">Needs attention</p>
           </div>
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-2">
             {ADMIN_NEEDS_ATTENTION.map((item) => (
               <button
                 key={item.id}
@@ -101,7 +101,7 @@ export function AdminOverviewPage() {
           </div>
         </div>
 
-        <div className="min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-[18px] sm:px-5">
+        <div className="min-w-0 rounded-xl border border-slate-200 bg-white px-3.5 py-4 sm:px-5 sm:py-[18px]">
           <div className="mb-3 flex flex-col gap-2 border-b border-slate-100 pb-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
             <p className="text-[14px] font-semibold text-slate-800">Last 7 days · deposits vs bids</p>
             <button type="button" className="text-[12px] font-medium text-maroon-600 hover:underline">
@@ -113,14 +113,14 @@ export function AdminOverviewPage() {
       </div>
 
       <div>
-        <p className="mb-3 text-[14px] font-semibold text-slate-800">Work queues</p>
-        <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <p className="mb-2.5 text-[14px] font-semibold text-slate-800 sm:mb-3">Work queues</p>
+        <div className="grid min-w-0 grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3 xl:grid-cols-3">
           {ADMIN_QUEUE_CARDS.map((card) => (
             <button
               key={card.id}
               type="button"
               onClick={() => navigate(card.to)}
-              className="flex min-w-0 flex-col gap-3 rounded-xl border border-slate-200 bg-white px-4 pb-4 pt-[18px] text-left hover:border-maroon-200 sm:px-5"
+              className="flex min-w-0 flex-col gap-2.5 rounded-xl border border-slate-200 bg-white px-3.5 pb-3.5 pt-4 text-left hover:border-maroon-200 sm:gap-3 sm:px-5 sm:pb-4 sm:pt-[18px]"
             >
               <div className="flex items-center justify-between">
                 <span
@@ -145,9 +145,9 @@ export function AdminOverviewPage() {
         </div>
       </div>
 
-      <div className="min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-[18px] sm:px-5">
+      <div className="min-w-0 rounded-xl border border-slate-200 bg-white px-3.5 py-4 sm:px-5 sm:py-[18px]">
         <p className="mb-2.5 text-[14px] font-semibold text-slate-800">Priority items</p>
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col gap-2">
           {ADMIN_PRIORITY.map((item) => (
             <button
               key={item.id}
@@ -155,8 +155,8 @@ export function AdminOverviewPage() {
               onClick={() => navigate(item.to)}
               className={
                 item.tone === 'urgent'
-                  ? 'flex flex-col gap-3 rounded-[10px] border border-red-200 bg-red-50 px-4 py-3 text-left sm:flex-row sm:items-center sm:justify-between'
-                  : 'flex flex-col gap-3 rounded-[10px] border border-amber-200 bg-amber-50 px-4 py-3 text-left sm:flex-row sm:items-center sm:justify-between'
+                  ? 'flex flex-col gap-2.5 rounded-[10px] border border-red-200 bg-red-50 px-3.5 py-3 text-left sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-4'
+                  : 'flex flex-col gap-2.5 rounded-[10px] border border-amber-200 bg-amber-50 px-3.5 py-3 text-left sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-4'
               }
             >
               <div className="flex min-w-0 flex-col gap-[3px]">
@@ -177,38 +177,44 @@ export function AdminOverviewPage() {
         </div>
       </div>
 
-      <div className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white px-4 py-[18px] sm:px-5">
-        <div className="mb-2.5">
+      <div className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white sm:px-5 sm:py-[18px]">
+        <div className="mb-2.5 px-3.5 pt-4 sm:px-0 sm:pt-0">
           <p className="text-[15px] font-semibold text-slate-800">Recent activity</p>
           <p className="text-[12px] text-slate-500">Latest platform and admin activity.</p>
         </div>
 
-        <div className="divide-y divide-slate-100 xl:hidden">
+        <div className="flex flex-col gap-2.5 bg-slate-50 p-3 xl:hidden">
           {ADMIN_ACTIVITY.map((row) => (
-            <div key={row.id} className="py-3.5">
-              <div className="flex items-start justify-between gap-3">
-                <p className="text-[13px] font-medium text-slate-800">{row.activity}</p>
-                <AdminBadge status={row.status} />
+            <div
+              key={row.id}
+              className="flex min-h-[72px] items-center gap-3 rounded-xl border border-slate-200 bg-white px-3.5 py-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-3">
+                  <p className="min-w-0 text-[14px] font-semibold leading-snug text-slate-900">{row.activity}</p>
+                  <AdminBadge status={row.status} />
+                </div>
+                <p className="mt-1.5 truncate text-[12.5px] text-slate-500">{row.reference}</p>
+                <p className="mt-0.5 text-[11.5px] text-slate-400">{row.at}</p>
               </div>
-              <p className="mt-1 text-[12px] text-slate-500">{row.reference}</p>
-              <p className="mt-1 text-[11.5px] text-slate-400">{row.at}</p>
             </div>
           ))}
         </div>
 
-        <div className="hidden min-w-0 xl:block">
+        <div className="hidden min-w-0 px-0 xl:block">
           <AdminTable embedded grid="1.4fr 1.2fr 0.8fr 0.9fr" headers={['ACTIVITY', 'REFERENCE', 'STATUS', 'DATE / TIME']}>
             {ADMIN_ACTIVITY.map((row) => (
               <AdminRow
-                key={row.id}
-                grid="1.4fr 1.2fr 0.8fr 0.9fr"
-                columns={[
-                  <span className="text-slate-700">{row.activity}</span>,
-                  <span className="text-slate-500">{row.reference}</span>,
-                  <AdminBadge status={row.status} />,
-                  <span className="text-[11.5px] text-slate-400">{row.at}</span>,
-                ]}
-              />
+              key={row.id}
+              grid="1.4fr 1.2fr 0.8fr 0.9fr"
+              embedded
+              columns={[
+                <span className="text-slate-700">{row.activity}</span>,
+                <span className="text-slate-500">{row.reference}</span>,
+                <AdminBadge status={row.status} />,
+                <span className="text-[11.5px] text-slate-400">{row.at}</span>,
+              ]}
+            />
             ))}
           </AdminTable>
         </div>

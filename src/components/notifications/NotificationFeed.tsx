@@ -41,25 +41,25 @@ export function NotificationFeed({
   })).filter((section) => section.items.length > 0)
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-border bg-white">
-      <div className="flex items-center justify-between px-5 py-4">
-        <div className="flex items-center gap-2">
-          <h2 className="text-[16px] font-semibold text-[#1a1e26]">Recent</h2>
+    <section className="min-w-0 overflow-hidden rounded-2xl border border-[#ebebec] bg-white">
+      <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <button
+          type="button"
+          onClick={onMarkAllRead}
+          disabled={unreadCount === 0}
+          className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-[#dacdd0] bg-[#f9f5f6] text-[13px] font-medium text-[#480516] hover:bg-[#f4ecee] disabled:pointer-events-none disabled:opacity-40 sm:order-2 sm:h-auto sm:w-auto sm:border-0 sm:bg-transparent sm:px-0 sm:hover:bg-transparent sm:hover:underline"
+        >
+          <Icon src={markReadIcon} size={12} />
+          Mark all as read
+        </button>
+        <div className="flex items-center gap-2 sm:order-1">
+          <h2 className="text-[16px] font-semibold leading-6 text-[#1a1e26]">Recent</h2>
           {unreadCount > 0 ? (
-            <span className="flex size-5 items-center justify-center rounded-full bg-wine-500 text-[11px] font-medium text-white">
+            <span className="flex size-5 items-center justify-center rounded-full bg-[#480516] text-[11px] font-medium text-white">
               {unreadCount}
             </span>
           ) : null}
         </div>
-          <button
-            type="button"
-            onClick={onMarkAllRead}
-            disabled={unreadCount === 0}
-            className="inline-flex items-center gap-1.5 text-[13px] font-medium text-wine-500 hover:underline disabled:pointer-events-none disabled:opacity-40"
-          >
-            <Icon src={markReadIcon} size={12} />
-            Mark all as read
-          </button>
       </div>
       <NotificationFilters value={filter} counts={filterCounts} onChange={onFilterChange} />
       <div>
@@ -68,11 +68,11 @@ export function NotificationFeed({
         ) : (
           grouped.map((section) => (
             <div key={section.group}>
-              <div className="flex items-center gap-3 px-5 py-2">
+              <div className="flex items-center gap-3 px-4 py-2 sm:px-5">
                 <span className="text-[11px] font-medium tracking-[0.08em] text-[#9ca3af] uppercase">
                   {GROUP_LABEL[section.group]}
                 </span>
-                <span className="h-px flex-1 bg-border" />
+                <span className="h-px flex-1 bg-[#ebebec]" />
               </div>
               {section.items.map((item) => (
                 <NotificationRow key={item.id} item={item} onOpen={onOpen} />
@@ -81,14 +81,14 @@ export function NotificationFeed({
           ))
         )}
       </div>
-      <div className="flex items-center justify-between border-t border-border px-5 py-3.5">
+      <div className="flex items-center justify-between gap-3 border-t border-[#ebebec] px-4 py-3.5 sm:px-5">
         <p className="text-[12px] text-[#9ca3af]">
           {items.length} {items.length === 1 ? 'notification' : 'notifications'}
         </p>
         <button
           type="button"
           onClick={onViewHistory}
-          className="text-[13px] font-medium text-wine-500 hover:underline"
+          className="text-[13px] font-medium text-[#480516] hover:underline"
         >
           View all history →
         </button>

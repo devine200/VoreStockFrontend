@@ -4,10 +4,6 @@ import usersIcon from '@/assets/icons/users.svg'
 import infoIcon from '@/assets/icons/info.svg'
 import type { ReferralContact } from '@/types'
 
-function UsersIcon() {
-  return <Icon src={usersIcon} size={20} />
-}
-
 export function NetworkRoster({
   contacts,
   activeCount,
@@ -16,28 +12,76 @@ export function NetworkRoster({
   activeCount: number
 }) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-border bg-white">
-      <div className="flex flex-col gap-3 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+    <section className="min-w-0 overflow-hidden rounded-2xl border border-[#ebebec] bg-white">
+      <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5">
         <div className="flex items-center gap-3">
-          <span className="flex size-9 items-center justify-center rounded-full bg-wine-50 text-wine-500">
-            <UsersIcon />
+          <span className="flex size-9 items-center justify-center rounded-full bg-[#f9f5f6] text-[#480516]">
+            <Icon src={usersIcon} size={20} />
           </span>
           <div>
-            <h2 className="text-[16px] font-semibold text-[#1a1e26]">Network Roster</h2>
+            <h2 className="text-[16px] font-semibold leading-6 text-[#1a1e26]">Network Roster</h2>
             <p className="text-[13px] text-[#7a7b7c]">
               {contacts.length} contacts invited · {activeCount} active
             </p>
           </div>
         </div>
-        <p className="flex items-center gap-2 text-[12px] text-[#9ca3af]">
+        <p className="flex items-start gap-2 text-[12px] leading-4 text-[#9ca3af] sm:max-w-[240px] sm:text-right">
           <Icon src={infoIcon} size={14} />
           Rewards earned once a qualifying purchase is completed.
         </p>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[860px] text-left">
+
+      <div className="lg:hidden">
+        {contacts.map((contact) => (
+          <div key={contact.id} className="border-t border-[#ebebec] px-4 py-3.5">
+            <div className="flex items-start gap-3">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#f9f5f6] text-[12px] font-semibold text-[#480516]">
+                {contact.initials}
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="truncate text-[14px] font-medium leading-5 text-[#1a1e26]">{contact.name}</p>
+                    <p className="truncate text-[12px] text-[#9ca3af]">{contact.company}</p>
+                  </div>
+                  <ReferralStatusBadge status={contact.status} />
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 grid grid-cols-2 overflow-hidden rounded-xl bg-[#f8f8f9]">
+              <div className="px-3 py-2.5">
+                <p className="text-[10px] uppercase tracking-[0.4px] text-[#9ca3af]">Email</p>
+                <p className="mt-0.5 truncate text-[12px] text-[#1a1e26]">{contact.email}</p>
+              </div>
+              <div className="border-l border-[#ebebec] px-3 py-2.5">
+                <p className="text-[10px] uppercase tracking-[0.4px] text-[#9ca3af]">Invited</p>
+                <p className="mt-0.5 text-[12px] text-[#1a1e26]">{contact.invitedAt}</p>
+              </div>
+              <div className="border-t border-[#ebebec] px-3 py-2.5">
+                <p className="text-[10px] uppercase tracking-[0.4px] text-[#9ca3af]">Reward</p>
+                <p className="mt-0.5 text-[13px] font-semibold">
+                  {contact.reward != null ? (
+                    <span className="text-[#0a6e38]">+${contact.reward}</span>
+                  ) : (
+                    <span className="text-[#9ca3af]">—</span>
+                  )}
+                </p>
+              </div>
+              <div className="border-t border-l border-[#ebebec] px-3 py-2.5">
+                <p className="text-[10px] uppercase tracking-[0.4px] text-[#9ca3af]">Status</p>
+                <p className="mt-0.5 text-[12px] text-[#1a1e26]">
+                  {contact.status === 'reward_earned' ? 'Reward earned' : 'Pending'}
+                </p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="hidden lg:block">
+        <table className="w-full text-left">
           <thead>
-            <tr className="border-y border-border text-[11px] font-medium tracking-[0.08em] text-[#9ca3af] uppercase">
+            <tr className="border-y border-[#ebebec] text-[11px] font-medium tracking-[0.08em] text-[#9ca3af] uppercase">
               <th className="px-6 py-3 font-medium">Contact</th>
               <th className="px-4 py-3 font-medium">Email</th>
               <th className="px-4 py-3 font-medium">Date Invited</th>
@@ -47,10 +91,10 @@ export function NetworkRoster({
           </thead>
           <tbody>
             {contacts.map((contact) => (
-              <tr key={contact.id} className="border-b border-border last:border-b-0">
+              <tr key={contact.id} className="border-b border-[#ebebec] last:border-b-0">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-wine-50 text-[12px] font-semibold text-wine-500">
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#f9f5f6] text-[12px] font-semibold text-[#480516]">
                       {contact.initials}
                     </span>
                     <span>
@@ -66,7 +110,7 @@ export function NetworkRoster({
                 </td>
                 <td className="px-6 py-4 text-right text-[14px] font-medium">
                   {contact.reward != null ? (
-                    <span className="text-[#1f7a45]">+${contact.reward}</span>
+                    <span className="text-[#0a6e38]">+${contact.reward}</span>
                   ) : (
                     <span className="text-[#9ca3af]">—</span>
                   )}

@@ -2,10 +2,6 @@ import { Button } from '@/components/shared/Button'
 import { Icon } from '@/components/shared/Icon'
 import giftIcon from '@/assets/icons/gift.svg'
 
-function GiftIcon() {
-  return <Icon src={giftIcon} size={20} />
-}
-
 export function FreightCreditsPanel({
   earned,
   used,
@@ -22,14 +18,14 @@ export function FreightCreditsPanel({
   onApply: () => void
 }) {
   return (
-    <div className="flex w-full flex-col gap-4 lg:w-[487px] lg:shrink-0">
-      <section className="rounded-2xl bg-wine-500 p-6 text-white">
+    <div className="flex w-full flex-col gap-4 lg:w-[390px] lg:shrink-0 xl:w-[487px]">
+      <section className="rounded-2xl bg-[#480516] p-5 text-white sm:p-6">
         <div className="flex items-center gap-2 text-[13px] font-medium tracking-[0.08em] uppercase">
-          <GiftIcon />
+          <Icon src={giftIcon} size={20} />
           Freight Credits
         </div>
         <p className="mt-4 text-[14px] text-white/80">You have</p>
-        <p className="font-display text-[36px] leading-none font-semibold">${available}</p>
+        <p className="font-display text-[28px] leading-none font-semibold sm:text-[36px]">${available}</p>
         <p className="mt-1 text-[14px] text-white/80">in available freight credits</p>
         <div className="mt-5 space-y-2 border-t border-white/15 pt-4 text-[13px]">
           <div className="flex justify-between text-white/80">
@@ -52,7 +48,7 @@ export function FreightCreditsPanel({
           </div>
         </div>
       </section>
-      <section className="rounded-2xl border border-border bg-white p-5">
+      <section className="rounded-2xl border border-[#ebebec] bg-white p-5">
         <p className="text-[14px] font-semibold text-[#1a1e26]">Use your Freight Credits</p>
         <p className="mt-1 text-[13px] leading-5 text-[#7a7b7c]">
           Your available credits can be applied to eligible orders during checkout.

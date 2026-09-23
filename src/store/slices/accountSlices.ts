@@ -101,8 +101,67 @@ const disputesSlice = createSlice({
             at: stamp,
             body: action.payload.details || action.payload.reason,
           },
+          {
+            actor: 'system',
+            title: 'Evidence requested',
+            at: stamp,
+            body: 'Please add any supporting photos, invoices, or wallet activity that helps us review this case.',
+          },
         ],
       })
+    },
+    replyToDispute(state, action: PayloadAction<{ id: string; body: string; files?: string[] }>) {
+      const dispute = state.items.find((d) => d.id === action.payload.id)
+      if (!dispute || dispute.status === 'resolved' || dispute.status === 'closed') return
+
+      const body = action.payload.body.trim()
+      const files = (action.payload.files ?? []).filter(Boolean)
+      if (!body && files.length === 0) return
+
+      const now = new Date()
+      const stamp = new Intl.DateTimeFormat('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      }).format(now)
+
+      const waitingOnEvidence =
+        dispute.status === 'awaiting_response' &&
+        dispute.events.some((e) => /evidence requested/i.test(e.title))
+      const title = files.length > 0 || waitingOnEvidence ? 'Evidence submitted' : 'Reply'
+      const awaiting = dispute.status === 'awaiting_response' || dispute.status === 'open'
+
+      dispute.events.push({
+        actor: 'you',
+        title,
+        at: stamp,
+        body:
+          body ||
+          `Uploaded ${files.length} file${files.length === 1 ? '' : 's'}.`,
+        attachments: files.length ? files : undefined,
+      })
+
+      if (files.length || waitingOnEvidence) {
+        dispute.completedSteps = Math.max(dispute.completedSteps, 2)
+      } else {
+        dispute.completedSteps = Math.max(dispute.completedSteps, 1)
+      }
+
+      dispute.updatedAt = now.toISOString()
+
+      if (awaiting) {
+        dispute.status = 'under_review'
+        dispute.events.push({
+          actor: 'cs',
+          title: 'Under review',
+          at: stamp,
+          body: files.length
+            ? 'Your evidence has been received. Our team is reviewing the case with the seller. Expected response within 3 business days.'
+            : 'We’ve added your update to the case. Our team will follow up if anything else is needed.',
+        })
+      }
     },
   },
 })
@@ -211,12 +270,20 @@ const ticketsSlice = createSlice({
         ],
       })
     },
-    replyToTicket(state, action: PayloadAction<{ id: string; body: string }>) {
+    replyToTicket(
+      state,
+      action: PayloadAction<{ id: string; body: string; files?: string[] }>,
+    ) {
       const ticket = state.items.find((t) => t.id === action.payload.id)
       if (!ticket) return
       const now = new Date()
       const at = `Today ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
-      ticket.messages.push({ from: 'you', body: action.payload.body, at })
+      ticket.messages.push({
+        from: 'you',
+        body: action.payload.body,
+        at,
+        attachments: action.payload.files?.length ? action.payload.files : undefined,
+      })
       ticket.updatedAt = now.toISOString()
       if (ticket.status === 'awaiting_you') ticket.status = 'open'
     },
@@ -225,7 +292,7 @@ const ticketsSlice = createSlice({
 
 export const { addOrderFromWin } = ordersSlice.actions
 export const { markRead, markAllRead, updateNotificationPrefs } = notificationsSlice.actions
-export const { openDispute } = disputesSlice.actions
+export const { openDispute, replyToDispute } = disputesSlice.actions
 export const { signContract } = contractsSlice.actions
 export const { updatePrefs } = profileSlice.actions
 export const { addTicket, replyToTicket } = ticketsSlice.actions
